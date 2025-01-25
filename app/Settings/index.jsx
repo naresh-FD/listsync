@@ -28,7 +28,7 @@ const SettingsScreen = () => {
   const logout = async () => {
     try {
       router.replace("auth/WelcomeScreen");
-      await AsyncStorage.removeItem(user);
+      await AsyncStorage.removeItem("user");
     } catch (err) {
       console.log(err);
     }
