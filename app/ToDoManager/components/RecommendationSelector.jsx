@@ -259,13 +259,5 @@ const styles = StyleSheet.create({
     height: 50,
     marginBottom: 5,
   },
-  serchField: {
-    width: "100%",
-    height: 35,
-    backgroundColor: "#333333",
-    paddingLeft: 10,
-    borderRadius: 10,
-    color: "white",
-  },
 });
 export default RecommendationSelector;
