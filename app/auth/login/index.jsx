@@ -112,7 +112,7 @@ const LoginScreen = () => {
         // console.log("user available", userObject);
       }
     };
-    checkIsUserAvailable();
+    // checkIsUserAvailable();
   }, []);
 
   return (

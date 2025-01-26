@@ -45,6 +45,9 @@ const AddTodo = () => {
 
         if (createNotesResp?.message === "Success") {
           //update the notes Id to user in Cloud
+          typeof userObject.notes === "string"
+            ? (userObject.notes = JSON.parse(userObject.notes))
+            : (userObject.notes = userObject.notes);
           userObject.notes.push(newTodo.uid);
 
           let updateNoteIdToUserResp = await updateUser({
