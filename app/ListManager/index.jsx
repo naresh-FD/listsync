@@ -56,8 +56,6 @@ const TodoList = () => {
     }, [])
   );
 
-  // console.log("todos", JSON.stringify(todos));
-
   return (
     <>
       <Header />
