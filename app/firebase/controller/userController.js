@@ -1,18 +1,14 @@
 import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../firebaseConfig";
+import { validateCreateProfilePayload } from "../../util/helper";
 
-export const createProfile = async (userDetails) => {
+export const createProfile = async (type, userDetails) => {
   try {
-    const { email, password, uid } = userDetails;
-    if ((email, password, uid)) {
-      //User after Google sign in
-      // await setDoc(doc(db, 'users', response.user.uid))
-      await setDoc(doc(db, "users", uid), {
-        uid: uid,
-        email: email,
-        password: password,
-        notes: "[]",
-      });
+    if (validateCreateProfilePayload(userDetails, type)) {
+      await setDoc(doc(db, "users", userDetails.uid), userDetails);
+      return true;
+    } else {
+      return false;
     }
   } catch (err) {
     console.log("Create Profile Error - ", err);
