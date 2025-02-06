@@ -12,7 +12,20 @@
           "package_name": "com.celestial.listSync"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "990584278692-bu04ielcee2utjtbtk1a57hvm9sl6j3m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.celestial.listSync",
+            "certificate_hash": "73ac5132d555929afcb20d5d7a7e9ba574052832"
+          }
+        },
+        {
+          "client_id": "990584278692-9pa29gpdtigbn7ftpafadlohknij05sg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBa-cQpMFLnfYdOW1o46_TIxdKhf7eIqnE"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "990584278692-59v56krseb43ppt7olncu0osgahuv71l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

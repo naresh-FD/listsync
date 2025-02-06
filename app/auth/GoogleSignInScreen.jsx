@@ -22,7 +22,7 @@ const GoogleSignInScreen = () => {
 
   GoogleSignin.configure({
     webClientId:
-      "990584278692-fd0i8t8rbpg3qa5hhrdojnuafcv28imc.apps.googleusercontent.com",
+      "990584278692-9pa29gpdtigbn7ftpafadlohknij05sg.apps.googleusercontent.com",
     scopes: ["profile", "email"],
   });
 
