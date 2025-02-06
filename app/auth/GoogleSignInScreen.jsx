@@ -19,11 +19,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const GoogleSignInScreen = () => {
   // const isWeb = Platform.OS === "web";
   const router = useRouter();
-  let webClientId =
-    "897556668261-a3vlt5bsp7r5i6u92j48nu1g7uksl1va.apps.googleusercontent.com";
 
   GoogleSignin.configure({
-    webClientId: webClientId,
+    webClientId:
+      "990584278692-9pa29gpdtigbn7ftpafadlohknij05sg.apps.googleusercontent.com",
     scopes: ["profile", "email"],
   });
 
@@ -133,9 +132,10 @@ const GoogleSignInScreen = () => {
           break;
       }
     } catch (apiError) {
-      console.log(
-        apiError?.response?.data?.error?.message || "Something went wrong"
-      );
+      console.log("apiError", apiError);
+      // console.log(
+      //   apiError?.response?.data?.error?.message || "Something went wrong"
+      // );
     }
   };
 
