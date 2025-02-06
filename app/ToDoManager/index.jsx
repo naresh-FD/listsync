@@ -17,6 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import FlatListItem from "./components/FlatListItem";
 import { setToLocalStorage } from "../util/helper";
 import NewListItemField from "./components/NewListItemField";
+import TapToAddItem from "./components/TapToAddItem";
 const ToDoManager = () => {
   //router
   const router = useRouter();
@@ -195,31 +196,6 @@ const ToDoManager = () => {
       console.log("err", err);
     }
   };
-  const TapToAddItem = useMemo(() => {
-    let isitemAvailable = Object.values(listItems).find((cate) =>
-      cate.find((item) => item.title.toLowerCase() == searchQuery.toLowerCase())
-    );
-
-    const createItem = () => {
-      addNewItem(searchQuery);
-    };
-    if (searchQuery.length !== 0 && isitemAvailable === undefined) {
-      return (
-        <View style={styles.tapToAddWrapper}>
-          <Pressable
-            onPress={() => createItem()}
-            style={styles.tapToAddContainer}
-          >
-            <Text style={styles.tapToAddText}>
-              Add <Text style={styles.tapToAddHighlight}>{searchQuery}</Text>
-            </Text>
-          </Pressable>
-        </View>
-      );
-    } else {
-      return null;
-    }
-  }, [searchQuery, listItems]);
 
   // list menu functions start
   const deleteAllItems = async () => {
@@ -299,16 +275,20 @@ const ToDoManager = () => {
           setVisibleMenu={setVisibleMenu}
         />
         <View style={styles.bodyList}>
+          {isAddFieldOpen ? (
+            <NewListItemField
+              listData={listData}
+              setListData={setListData}
+              setToLocalStorage={setToLocalStorage}
+            />
+          ) : null}
           <ScrollView style={styles.bodyScrollViewStyles}>
-            {TapToAddItem}
+            <TapToAddItem
+              searchQuery={searchQuery}
+              listItems={listItems}
+              onCreateItem={addNewItem}
+            />
             {RenderFlatListView}
-            {isAddFieldOpen ? (
-              <NewListItemField
-                listData={listData}
-                setListData={setListData}
-                setToLocalStorage={setToLocalStorage}
-              />
-            ) : null}
           </ScrollView>
         </View>
       </View>

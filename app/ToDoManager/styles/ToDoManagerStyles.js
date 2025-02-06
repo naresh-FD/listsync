@@ -267,6 +267,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginTop: 15,
     paddingBottom: 5,
+    paddingTop: 10,
     borderRadius: 10,
   },
   fieldsSection: {
