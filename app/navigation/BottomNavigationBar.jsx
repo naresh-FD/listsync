@@ -12,6 +12,11 @@ const BottomNavigationBar = ({ page }) => {
       route: "ListManager",
     },
     {
+      name: "BillsScreen",
+      icon: "document-scanner",
+      route: "BillsScreen",
+    },
+    {
       name: "Settings",
       icon: "settings",
       route: "Settings",

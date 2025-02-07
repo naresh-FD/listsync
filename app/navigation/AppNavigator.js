@@ -31,7 +31,7 @@ const AppNavigator = () => {
           component={(props) => (
             <AuthGuard {...props}>
               <BillsScreen {...props} />
-            </AuthGuard>
+            </AuthGuard> 
           )}
         />
         <Stack.Screen

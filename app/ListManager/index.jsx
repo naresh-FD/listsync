@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, StyleSheet, SafeAreaView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
@@ -57,7 +57,7 @@ const TodoList = () => {
   );
 
   return (
-    <>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#0047cc" }}>
       <Header />
       <View style={styles.container}>
         <View style={styles.body}>
@@ -82,7 +82,7 @@ const TodoList = () => {
         </View>
       </View>
       <BottomNavigationBar page="Home" />
-    </>
+    </SafeAreaView>
   );
 };
 

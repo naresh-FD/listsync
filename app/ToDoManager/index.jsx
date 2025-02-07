@@ -5,6 +5,7 @@ import {
   Pressable,
   TextInput,
   ScrollView,
+  SafeAreaView,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
@@ -254,47 +255,49 @@ const ToDoManager = () => {
 
   // list menu functions end
   return listData ? (
-    <View style={styles.toDoContainer}>
-      <View style={styles.body}>
-        <ToDoHeader
-          listData={listData}
-          router={router}
-          isSelectionOn={isSelectionOn}
-          enableSearch={enableSearch}
-          deleteAllItems={deleteAllItems}
-          enableEditMode={enableEditMode}
-          cancelSelection={cancelSelection}
-          selectAllItems={selectAllItems}
-          unSelectAllItems={unSelectAllItems}
-          invertSelection={invertSelection}
-          visibleMenu={visibleMenu}
-          deleteSelectedItems={deleteSelectedItems}
-          isEditModeOn={isEditModeOn}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          setVisibleMenu={setVisibleMenu}
-        />
-        <View style={styles.bodyList}>
-          {isAddFieldOpen ? (
-            <NewListItemField
-              listData={listData}
-              setListData={setListData}
-              setToLocalStorage={setToLocalStorage}
-            />
-          ) : null}
-          <ScrollView style={styles.bodyScrollViewStyles}>
-            <TapToAddItem
-              searchQuery={searchQuery}
-              listItems={listItems}
-              onCreateItem={addNewItem}
-            />
-            {RenderFlatListView}
-          </ScrollView>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#0047cc" }}>
+      <View style={styles.toDoContainer}>
+        <View style={styles.body}>
+          <ToDoHeader
+            listData={listData}
+            router={router}
+            isSelectionOn={isSelectionOn}
+            enableSearch={enableSearch}
+            deleteAllItems={deleteAllItems}
+            enableEditMode={enableEditMode}
+            cancelSelection={cancelSelection}
+            selectAllItems={selectAllItems}
+            unSelectAllItems={unSelectAllItems}
+            invertSelection={invertSelection}
+            visibleMenu={visibleMenu}
+            deleteSelectedItems={deleteSelectedItems}
+            isEditModeOn={isEditModeOn}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            setVisibleMenu={setVisibleMenu}
+          />
+          <View style={styles.bodyList}>
+            {isAddFieldOpen ? (
+              <NewListItemField
+                listData={listData}
+                setListData={setListData}
+                setToLocalStorage={setToLocalStorage}
+              />
+            ) : null}
+            <ScrollView style={styles.bodyScrollViewStyles}>
+              <TapToAddItem
+                searchQuery={searchQuery}
+                listItems={listItems}
+                onCreateItem={addNewItem}
+              />
+              {RenderFlatListView}
+            </ScrollView>
+          </View>
         </View>
+        <View style={styles.footer}></View>
+        <AddItemButton />
       </View>
-      <View style={styles.footer}></View>
-      <AddItemButton />
-    </View>
+    </SafeAreaView>
   ) : null;
 };
 
