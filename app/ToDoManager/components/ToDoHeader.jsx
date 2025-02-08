@@ -11,6 +11,8 @@ const ToDoHeader = ({
   isSelectionOn,
   enableSearch,
   deleteAllItems,
+  addToFavouriteList,
+  selectedItems,
   enableEditMode,
   cancelSelection,
   selectAllItems,
@@ -41,7 +43,8 @@ const ToDoHeader = ({
         >
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
-        <Text style={styles.title}>{listData.data.title}</Text>
+        {/* {console.log("45", listData.title)} */}
+        <Text style={styles.title}>{listData.title}</Text>
         <Menu
           visible={visibleMenu === listData.uid}
           onDismiss={closeMenu}
@@ -63,6 +66,10 @@ const ToDoHeader = ({
             </>
           ) : (
             <>
+              <Menu.Item
+                onPress={() => addToFavouriteList()}
+                title="Add to Favourite"
+              />
               {selectedItems.length !== 0 ? (
                 <Menu.Item onPress={deleteSelectedItems} title="Delete" />
               ) : null}

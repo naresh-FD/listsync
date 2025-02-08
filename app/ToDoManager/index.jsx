@@ -227,6 +227,33 @@ const ToDoManager = () => {
     setToLocalStorage([], listData);
   };
 
+  const addToFavouriteList = async () => {
+    try {
+      if (selectedItems.length !== 0) {
+        const userList = await AsyncStorage.getItem("favouriteList");
+        const userFavouriteList = JSON.parse(userList);
+
+        let favouriteListData = userFavouriteList.data;
+        selectedItems.forEach((item) => {
+          favouriteListData.push(item);
+        });
+        userFavouriteList.data = favouriteListData;
+
+        await AsyncStorage.setItem(
+          "favouriteList",
+          JSON.stringify(userFavouriteList)
+        );
+
+        //Clear Selected items for new selections
+        setSelectedItems([]);
+
+        console.log("Added items to Fav");
+      }
+    } catch (err) {
+      console.log("addToFavouriteList", err);
+    }
+  };
+
   const enableEditMode = () => {
     setIsEditModeOn(!isEditModeOn);
   };
@@ -286,6 +313,8 @@ const ToDoManager = () => {
           isSelectionOn={isSelectionOn}
           enableSearch={enableSearch}
           deleteAllItems={deleteAllItems}
+          addToFavouriteList={addToFavouriteList}
+          selectedItems={selectedItems}
           enableEditMode={enableEditMode}
           cancelSelection={cancelSelection}
           selectAllItems={selectAllItems}

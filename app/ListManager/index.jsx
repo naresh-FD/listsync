@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import React, { useState, useCallback, useEffect } from "react";
+import { View, Text, FlatList, StyleSheet, Pressable } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
@@ -56,10 +56,52 @@ const TodoList = () => {
     }, [])
   );
 
+  const initializeFavouriteList = async () => {
+    try {
+      const userFavouriteList = await AsyncStorage.getItem("favouriteList");
+      const user = await AsyncStorage.getItem("user");
+      if (userFavouriteList === null) {
+        let userObject = JSON.parse(user);
+        const newListPayload = {
+          uid: Date.now().toString(),
+          title: "Favourite List",
+          notes: "Personal Favourite List",
+          data: [],
+          admin: userObject.email,
+          collaborators: [userObject.email],
+        };
+        await AsyncStorage.setItem(
+          "favouriteList",
+          JSON.stringify(newListPayload)
+        );
+      }
+    } catch (err) {
+      console.log("initializeFavouriteList", err);
+    }
+  };
+
+  useEffect(() => {
+    //Create Favourite List
+    initializeFavouriteList();
+  }, []);
+
+  const showFavouriteList = async () => {
+    try {
+      const userFavouriteList = await AsyncStorage.getItem("favouriteList");
+      console.log(userFavouriteList);
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
+
   return (
     <>
       <Header />
       <View style={styles.container}>
+        <Pressable onPress={showFavouriteList}>
+          <Text>View Favourite</Text>
+        </Pressable>
+
         <View style={styles.body}>
           {todos.length !== 0 ? (
             <FlatList
