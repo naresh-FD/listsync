@@ -56,6 +56,8 @@ const NewListItemField = ({ listData, setListData }) => {
           data: existingListCopy,
         }));
         setToLocalStorage(existingListCopy, listData);
+        setItemTitle("");
+        setItemDescription("");
       }
     } catch (err) {
       console.log("Error adding item:", err);

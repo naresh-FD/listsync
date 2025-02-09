@@ -1,5 +1,12 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Pressable,
+  Share,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
@@ -7,6 +14,7 @@ import Header from "./components/Header";
 import RenderTodoItem from "./components/RenderTodoItem";
 import AddButton from "./components/AddButton";
 import BottomNavigationBar from "../navigation/BottomNavigationBar";
+import * as Linking from "expo-linking";
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
@@ -33,11 +41,14 @@ const TodoList = () => {
     router.push(`/ListManager/EditTodo?id=${uid}`);
   };
 
-  const handleShare = async (text) => {
+  const handleShare = async (noteId) => {
     try {
-      await Share.share({ message: text });
+      const schemeUrl = Linking.createURL(`linking/notes/${noteId}`);
+      await Share.share({
+        message: `Check out this List: ${schemeUrl}`,
+      });
     } catch (error) {
-      alert(error.message);
+      console.error("Error sharing item:", error);
     }
   };
 
@@ -56,9 +67,21 @@ const TodoList = () => {
     }, [])
   );
 
+  const goTo = () => {
+    try {
+      router.push("/linking/notes/1739004614929");
+      // Linking.openURL("listSync://linking/notes/1739004614929");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <>
       <Header />
+      {/* <Pressable onPress={goTo}>
+        <Text>Go To Linking</Text>
+      </Pressable> */}
       <View style={styles.container}>
         <View style={styles.body}>
           {todos.length !== 0 ? (
@@ -95,7 +118,6 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
-    marginTop: -5,
   },
   emptyListText: {
     textAlign: "center",

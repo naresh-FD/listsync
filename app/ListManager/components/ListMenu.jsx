@@ -22,10 +22,7 @@ const ListMenu = ({ listData, onEdit, onDelete, onShare }) => {
     >
       <Menu.Item onPress={() => onEdit(listData.uid)} title="Edit" />
       <Menu.Item onPress={() => onDelete(listData.uid)} title="Delete" />
-      <Menu.Item
-        onPress={() => onShare(JSON.stringify(listData))}
-        title="Share"
-      />
+      <Menu.Item onPress={() => onShare(listData.uid)} title="Share" />
     </Menu>
   );
 };

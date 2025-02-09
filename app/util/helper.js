@@ -1,5 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { defaultItems } from "./constants";
+import { updateNotesData } from "../firebase/controller/notesController";
+
 export const getLocalStorageItem = async (object) => {
   let itemFromLocalStorage = await AsyncStorage.getItem(object);
   if (itemFromLocalStorage !== null) {
@@ -16,6 +18,17 @@ export const getDefaultItems = (admin) => {
   return defaultItems;
 };
 
+export const updateItemDataToCloud = async (dataPayload) => {
+  try {
+    if (dataPayload.uid && dataPayload.data.length !== 0) {
+      let updateResp = await updateNotesData(dataPayload);
+      return updateResp;
+    }
+  } catch (err) {
+    console.log("updateItemDataToCloud", err);
+  }
+};
+
 export const setToLocalStorage = async (list, listMetaData) => {
   try {
     const storedTodos = await AsyncStorage.getItem("todos");
@@ -29,6 +42,16 @@ export const setToLocalStorage = async (list, listMetaData) => {
       (listItem) => listItem === selectedData
     );
     parsedAllData[indexOfSelectedList] = selectedData;
+
+    console.log("33", selectedData);
+
+    //Update the Notes data to cloud
+    let cloudPayload = {
+      uid: selectedData.uid,
+      data: JSON.stringify(selectedData.data),
+    };
+    let updateResp = await updateItemDataToCloud(cloudPayload);
+    console.log("Upload to cloud", updateResp.message);
 
     await AsyncStorage.setItem("todos", JSON.stringify(parsedAllData));
     console.log("Saved to local storage");

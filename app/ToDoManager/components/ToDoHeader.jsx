@@ -41,7 +41,7 @@ const ToDoHeader = ({
         >
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
-        <Text style={styles.title}>{listData.data.title}</Text>
+        <Text style={styles.title}>{listData.title}</Text>
         <Menu
           visible={visibleMenu === listData.uid}
           onDismiss={closeMenu}
@@ -96,7 +96,7 @@ const ToDoHeader = ({
 const styles = StyleSheet.create({
   headerContainer: {
     backgroundColor: Colors.light.buttonBackground,
-    paddingVertical: 15,
+    paddingVertical: 10,
     paddingHorizontal: 10,
     borderBottomLeftRadius: 15,
     borderBottomRightRadius: 15,
