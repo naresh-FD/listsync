@@ -88,7 +88,7 @@ const TodoList = () => {
   const showFavouriteList = async () => {
     try {
       const userFavouriteList = await AsyncStorage.getItem("favouriteList");
-      console.log(userFavouriteList);
+      // console.log(userFavouriteList);
     } catch (err) {
       console.log("err", err);
     }

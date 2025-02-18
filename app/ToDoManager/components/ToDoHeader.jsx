@@ -66,10 +66,12 @@ const ToDoHeader = ({
             </>
           ) : (
             <>
-              <Menu.Item
-                onPress={() => addToFavouriteList()}
-                title="Add to Favourite"
-              />
+              {!listData.title === "Favourite List" ? (
+                <Menu.Item
+                  onPress={() => addToFavouriteList()}
+                  title="Add to Favourite"
+                />
+              ) : null}
               {selectedItems.length !== 0 ? (
                 <Menu.Item onPress={deleteSelectedItems} title="Delete" />
               ) : null}
