@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, Pressable } from "react-native";
 import PropTypes from "prop-types";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const BottomNavigationBar = ({ page }) => {
   const router = useRouter();
@@ -12,15 +13,32 @@ const BottomNavigationBar = ({ page }) => {
       route: "ListManager",
     },
     {
+      name: "Favourite",
+      icon: "favorite",
+      route: "ListManager",
+    },
+    {
       name: "Settings",
       icon: "settings",
       route: "Settings",
     },
   ];
-  const routeHandler = (item) => {
-    const { route, name } = item;
-    if (page !== name) {
-      router.replace(route);
+
+  const routeHandler = async (item) => {
+    try {
+      const { route, name } = item;
+      if (name === "Favourite") {
+        const userFavouriteList = await AsyncStorage.getItem("favouriteList");
+        const stringData = JSON.stringify(userFavouriteList);
+        console.log("32", stringData);
+        router.push(`/ToDoManager?item=${stringData}`);
+      } else {
+        if (page !== name) {
+          router.replace(route);
+        }
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
   return (

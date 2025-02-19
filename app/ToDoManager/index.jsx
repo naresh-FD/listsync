@@ -5,6 +5,7 @@ import {
   Pressable,
   TextInput,
   ScrollView,
+  ToastAndroid,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
@@ -107,12 +108,14 @@ const ToDoManager = () => {
     let listDataObject = listData;
     if (listDataObject !== null && listDataObject !== undefined) {
       let listItems = null;
+      typeof listDataObject === "string"
+        ? (listDataObject = JSON.parse(listDataObject))
+        : null;
       if (typeof listDataObject.data === "string") {
         listItems = JSON.parse(listDataObject.data);
       } else {
         listItems = listDataObject.data;
       }
-
       let groupedItems = groupCategory(listItems);
       setListItems(groupedItems);
 
@@ -227,6 +230,46 @@ const ToDoManager = () => {
     setToLocalStorage([], listData);
   };
 
+  const addToFavouriteList = async () => {
+    try {
+      if (selectedItems.length !== 0) {
+        const userList = await AsyncStorage.getItem("favouriteList");
+        const userFavouriteList = JSON.parse(userList);
+
+        let favouriteListData = userFavouriteList.data;
+        selectedItems.forEach((item) => {
+          if (favouriteListData.length === 0) {
+            favouriteListData.push(item);
+          } else {
+            let isItemAvailable = favouriteListData.find(
+              (favItem) => favItem.uid === item.uid
+            );
+            if (!isItemAvailable) {
+              favouriteListData.push(item);
+            } else {
+              ToastAndroid.show(`Item already available!`, ToastAndroid.SHORT);
+            }
+          }
+        });
+        userFavouriteList.data = favouriteListData;
+
+        await AsyncStorage.setItem(
+          "favouriteList",
+          JSON.stringify(userFavouriteList)
+        );
+
+        //Clear Selected items for new selections
+        setSelectedItems([]);
+
+        cancelSelection();
+        setVisibleMenu(null);
+        console.log("Added items to Fav");
+      }
+    } catch (err) {
+      console.log("addToFavouriteList", err);
+    }
+  };
+
   const enableEditMode = () => {
     setIsEditModeOn(!isEditModeOn);
   };
@@ -281,11 +324,15 @@ const ToDoManager = () => {
     <View style={styles.toDoContainer}>
       <View style={styles.body}>
         <ToDoHeader
-          listData={listData}
+          listData={
+            typeof listData == "string" ? JSON.parse(listData) : listData
+          }
           router={router}
           isSelectionOn={isSelectionOn}
           enableSearch={enableSearch}
           deleteAllItems={deleteAllItems}
+          addToFavouriteList={addToFavouriteList}
+          selectedItems={selectedItems}
           enableEditMode={enableEditMode}
           cancelSelection={cancelSelection}
           selectAllItems={selectAllItems}
