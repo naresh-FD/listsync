@@ -3,16 +3,16 @@ import PropTypes from "prop-types";
 import { TouchableOpacity, StyleSheet } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 
-const AddButton = ({ onPress }) => (
-  <TouchableOpacity style={styles.addButton} onPress={onPress}>
-    <MaterialIcons name="add" size={24} color="white" />
+const ImportButton = ({ onPress }) => (
+  <TouchableOpacity style={styles.importButton} onPress={onPress}>
+    <MaterialIcons name="import-export" size={24} color="white" />
   </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({
-  addButton: {
+  importButton: {
     position: "absolute",
-    bottom: "10%",
+    bottom: "20%",
     right: 10,
     width: 60,
     height: 60,
@@ -24,8 +24,8 @@ const styles = StyleSheet.create({
   },
 });
 
-AddButton.propTypes = {
+ImportButton.propTypes = {
   onPress: PropTypes.func.isRequired,
 };
 
-export default AddButton;
+export default ImportButton;

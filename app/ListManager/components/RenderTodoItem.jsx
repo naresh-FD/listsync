@@ -9,7 +9,6 @@ import { getLocalStorageItem } from "../../util/helper";
 
 const RenderTodoItem = ({ item, onEdit, onDelete, onShare, onPress }) => {
   const listData = item.item;
-  console.log("9", listData);
   const [isListShared, setIsListShared] = useState(false);
 
   const checkIsListShared = async () => {
@@ -83,7 +82,7 @@ const styles = StyleSheet.create({
   rightSection: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-end",
     flex: 0.2,
     flexDirection: "row",
   },

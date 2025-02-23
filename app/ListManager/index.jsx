@@ -15,10 +15,15 @@ import RenderTodoItem from "./components/RenderTodoItem";
 import AddButton from "./components/AddButton";
 import BottomNavigationBar from "../navigation/BottomNavigationBar";
 import * as Linking from "expo-linking";
+import ImportButton from "./components/ImportButton";
+import NoteImportModal from "./components/NoteImportModal";
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
   const router = useRouter();
+
+  //Import Modal
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   const loadTodos = async () => {
     const storedTodos = await AsyncStorage.getItem("todos");
@@ -102,9 +107,13 @@ const TodoList = () => {
             <Text style={styles.emptyListText}>No Items in the list.</Text>
           )}
           <AddButton onPress={() => router.push("/ListManager/AddTodo")} />
+          <ImportButton onPress={() => setIsImportModalOpen(true)} />
         </View>
       </View>
       <BottomNavigationBar page="Home" />
+      {isImportModalOpen ? (
+        <NoteImportModal modalHandler={setIsImportModalOpen} />
+      ) : null}
     </>
   );
 };

@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import { getNotes } from "../../firebase/controller/notesController";
 import { updateUser } from "../../firebase/controller/userController";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { use } from "react";
 
 const NotesLinking = () => {
   const router = useRouter();
@@ -38,18 +37,6 @@ const NotesLinking = () => {
     };
 
     /**
-     * Purpose - Signal comes from external link
-     *           if there is no note data exist, it is fetched from the cloud with the note id
-     *           if present, no point of showing this screen, so redirect to Home
-     *           router.back() does not work.
-     */
-    const returnToHomeIfDataExist = () => {
-      if (noteData !== null) {
-        router.replace("ListManager");
-      }
-    };
-
-    /**
      * Puropse - Get the Current user's notes list
      *           If the shared list id does not exist in user's list add to list and upload to cloud
      *           Upload the same list to Local Storage
@@ -62,7 +49,7 @@ const NotesLinking = () => {
           (existingItem) => existingItem.uid === id
         );
         if (!isItemExist) {
-          console.log("Note does not exist");
+          console.log("Adding Note id to user's list");
           userObject.notes.push(String(id));
 
           let payload = {
@@ -74,7 +61,7 @@ const NotesLinking = () => {
           //LocalStorage
           await AsyncStorage.setItem("user", JSON.stringify(userObject));
         } else {
-          console.log("Note already exist");
+          console.log("Note Id already exist in user's list");
         }
       } catch (err) {
         console.log("updateNoteIdToUserCloudAndLocalList", err);
@@ -82,9 +69,24 @@ const NotesLinking = () => {
     };
 
     getNoteAndRedirect();
-    returnToHomeIfDataExist();
     updateNoteIdToUserCloudAndLocalList();
   }, []);
+
+  useEffect(() => {
+    /**
+     * Purpose - Signal comes from external link
+     *           if there is no note data exist, it is fetched from the cloud with the note id
+     *           if present, no point of showing this screen, so redirect to Home
+     *           router.back() does not work.
+     */
+    const returnToHomeIfDataExist = () => {
+      if (noteData !== null) {
+        router.replace("ListManager");
+      }
+    };
+
+    returnToHomeIfDataExist();
+  }, [noteData]);
 
   const goBackHome = () => {
     router.back();
