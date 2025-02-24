@@ -152,6 +152,7 @@ const ToDoManager = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              marginTop: 10,
             }}
           >
             <Text>No Items in the List</Text>

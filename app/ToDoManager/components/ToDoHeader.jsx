@@ -66,7 +66,7 @@ const ToDoHeader = ({
             </>
           ) : (
             <>
-              {!listData.title === "Favourite List" ? (
+              {listData.title !== "Favourite List" ? (
                 <Menu.Item
                   onPress={() => addToFavouriteList()}
                   title="Add to Favourite"
