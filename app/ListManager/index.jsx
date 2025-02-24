@@ -98,9 +98,9 @@ const TodoList = () => {
     <>
       <Header />
       <View style={styles.container}>
-        <Pressable onPress={showFavouriteList}>
+        {/* <Pressable onPress={showFavouriteList}>
           <Text>View Favourite</Text>
-        </Pressable>
+        </Pressable> */}
 
         <View style={styles.body}>
           {todos.length !== 0 ? (
