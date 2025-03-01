@@ -64,3 +64,13 @@ export const validateCreateProfilePayload = (paylaod, type) => {
       break;
   }
 };
+
+export const checkSourceListInFavouriteList = async (uid) => {
+  try {
+    const userFavouriteList = await AsyncStorage.getItem("favouriteList");
+    let userFavObject = JSON.parse(userFavouriteList);
+    return userFavObject.source.includes(uid);
+  } catch (err) {
+    console.log(err);
+  }
+};
