@@ -33,8 +33,8 @@ export default function RootLayout() {
             options={{ title: "Settings", headerShown: false }}
           />
           <Stack.Screen
-            name="Billscreen/index"
-            options={{ title: "Billscreen", headerShown: false }}
+            name="BillsScreen/index"
+            options={{ title: "BillsScreen", headerShown: false }}
           />
         </Stack>
       </AuthGuard>

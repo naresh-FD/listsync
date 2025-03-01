@@ -15,8 +15,6 @@ import { recommendedItems } from "../../util/constants";
 import { useRouter } from "expo-router";
 import { Colors } from "../../../constants/Colors";
 
-const sampleList = [{ title: "Veggies" }, { title: "Fruits" }, { title: "" }];
-
 const ToDoRecommendation = () => {
   return (
     <View style={styles.recommendationContainer}>

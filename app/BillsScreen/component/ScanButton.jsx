@@ -35,7 +35,7 @@ const ScanButton = ({ addBill }) => {
     try {
       console.log("[DEBUG] Starting save process...");
 
-      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-"); 
       const finalName = fileNameInput.trim()
         ? `${fileNameInput.replace(/[^a-z0-9]/gi, "_")}.jpg`
         : `document_${timestamp}.jpg`;

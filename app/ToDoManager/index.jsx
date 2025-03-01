@@ -19,6 +19,8 @@ import FlatListItem from "./components/FlatListItem";
 import { setToLocalStorage } from "../util/helper";
 import NewListItemField from "./components/NewListItemField";
 import TapToAddItem from "./components/TapToAddItem";
+import ToDoRecommendation from "./components/ToDoRecommendation";
+import { recommendedItems } from "../util/constants";
 const ToDoManager = () => {
   //router
   const router = useRouter();
@@ -114,7 +116,7 @@ const ToDoManager = () => {
       } else {
         listItems = listDataObject.data;
       }
-
+      //  want combine both listItems and recommendedItems
       let groupedItems = groupCategory(listItems);
       setListItems(groupedItems);
 
@@ -291,6 +293,7 @@ const ToDoManager = () => {
                 onCreateItem={addNewItem}
               />
               {RenderFlatListView}
+              {/* <ToDoRecommendation /> */}
             </ScrollView>
           </View>
         </View>
