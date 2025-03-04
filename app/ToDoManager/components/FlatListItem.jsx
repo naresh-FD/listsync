@@ -156,16 +156,19 @@ const FlatListItem = ({
   };
 
   const onLongPress = () => {
-    if (!isSelectionOn) {
-      setIsSectionOn(true);
-    }
+    setIsSectionOn(true);
   };
 
   const selectItem = (item) => {
     let templist = selectedItems;
     const tempCheck = !checked;
     if (tempCheck) {
-      templist.push(item);
+      const exists = selectedItems.some(
+        (existingItem) => existingItem.uid === item.uid
+      );
+      if (!exists) {
+        templist.push(item);
+      }
     } else {
       const index = templist.findIndex((listItem) => listItem === item);
       templist.splice(index, 1);

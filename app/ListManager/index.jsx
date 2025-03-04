@@ -1,5 +1,13 @@
-import React, { useState, useCallback } from "react";
-import { View, Text, FlatList, StyleSheet, SafeAreaView } from "react-native";
+import React, { useState, useCallback, useEffect } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  ToastAndroid,
+  Alert,
+  SafeAreaView,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
@@ -7,7 +15,8 @@ import Header from "./components/Header";
 import RenderTodoItem from "./components/RenderTodoItem";
 import AddButton from "./components/AddButton";
 import BottomNavigationBar from "../navigation/BottomNavigationBar";
-
+import { checkSourceListInFavouriteList } from "../util/helper";
+ 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
   const router = useRouter();
@@ -25,12 +34,71 @@ const TodoList = () => {
   };
 
   const handleDelete = async (uid) => {
-    const filteredTodos = todos.filter((todo) => todo.uid !== uid);
-    saveTodos(filteredTodos);
+    try {
+      if (await checkSourceListInFavouriteList(uid)) {
+        Alert.alert(
+          "Do you wish to delete this List?",
+          "Items in this list are added to your Favourite.",
+          [
+            {
+              text: "Delete",
+              onPress: async () => {
+                const filteredTodos = todos.filter((todo) => todo.uid !== uid);
+                saveTodos(filteredTodos);
+              },
+            },
+            {
+              text: "Cancel",
+              onPress: () => console.log("Cancel"),
+              style: "cancel",
+            },
+          ]
+        );
+      } else {
+        const filteredTodos = todos.filter((todo) => todo.uid !== uid);
+        saveTodos(filteredTodos);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handleEdit = (uid) => {
     router.push(`/ListManager/EditTodo?id=${uid}`);
+  };
+
+  const handleAddToFavourite = async (listData) => {
+    try {
+      //Fav List
+      const userFavouriteList = await AsyncStorage.getItem("favouriteList");
+      let favListObject = JSON.parse(userFavouriteList);
+      let favListData = favListObject.data;
+
+      //List
+      let selectedListData = JSON.parse(listData.data);
+      let selectedListId = listData.uid;
+
+      //Add Item to Fav List
+      selectedListData.forEach((item) => {
+        if (!favListData.includes(item)) {
+          favListData.push(item);
+        }
+      });
+      favListObject.data = favListData;
+
+      //Add List UID to source
+      favListObject.source.push(selectedListId);
+
+      //Set New List to Async Storage
+      await AsyncStorage.setItem(
+        "favouriteList",
+        JSON.stringify(favListObject)
+      );
+
+      ToastAndroid.show("Added List to Favourite List", ToastAndroid.SHORT);
+    } catch (err) {
+      console.log("Err - Add to Fav - List ", err);
+    }
   };
 
   const handleShare = async (text) => {
@@ -56,10 +124,53 @@ const TodoList = () => {
     }, [])
   );
 
+  const initializeFavouriteList = async () => {
+    try {
+      const userFavouriteList = await AsyncStorage.getItem("favouriteList");
+      const user = await AsyncStorage.getItem("user");
+      if (userFavouriteList === null) {
+        let userObject = JSON.parse(user);
+        const newListPayload = {
+          uid: Date.now().toString(),
+          title: "Favourite List",
+          notes: "Personal Favourite List",
+          data: [],
+          source: [],
+          admin: userObject.email,
+          collaborators: [userObject.email],
+        };
+        await AsyncStorage.setItem(
+          "favouriteList",
+          JSON.stringify(newListPayload)
+        );
+      }
+    } catch (err) {
+      console.log("initializeFavouriteList", err);
+    }
+  };
+
+  useEffect(() => {
+    //Create Favourite List
+    initializeFavouriteList();
+  }, []);
+
+  // const showFavouriteList = async () => {
+  //   try {
+  //     const userFavouriteList = await AsyncStorage.getItem("favouriteList");
+  //     // console.log(userFavouriteList);
+  //   } catch (err) {
+  //     console.log("err", err);
+  //   }
+  // };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0047cc" }}>
       <Header />
       <View style={styles.container}>
+        {/* <Pressable onPress={showFavouriteList}>
+          <Text>View Favourite</Text>
+        </Pressable> */}
+
         <View style={styles.body}>
           {todos.length !== 0 ? (
             <FlatList
@@ -69,6 +180,7 @@ const TodoList = () => {
                 <RenderTodoItem
                   item={item}
                   onEdit={handleEdit}
+                  onAddToFavourite={handleAddToFavourite}
                   onDelete={handleDelete}
                   onShare={handleShare}
                   onPress={goToListItems}

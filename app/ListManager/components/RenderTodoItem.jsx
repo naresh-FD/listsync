@@ -4,7 +4,14 @@ import { View, Text, StyleSheet } from "react-native";
 import { Card } from "react-native-paper";
 import ListMenu from "./ListMenu";
 
-const RenderTodoItem = ({ item, onEdit, onDelete, onShare, onPress }) => {
+const RenderTodoItem = ({
+  item,
+  onEdit,
+  onAddToFavourite,
+  onDelete,
+  onShare,
+  onPress,
+}) => {
   const listData = item.item;
 
   return (
@@ -14,6 +21,7 @@ const RenderTodoItem = ({ item, onEdit, onDelete, onShare, onPress }) => {
         <ListMenu
           listData={listData}
           onEdit={onEdit}
+          onAddToFavourite={onAddToFavourite}
           onDelete={onDelete}
           onShare={onShare}
         />
@@ -43,6 +51,7 @@ const styles = StyleSheet.create({
 RenderTodoItem.propTypes = {
   item: PropTypes.object.isRequired,
   onEdit: PropTypes.func.isRequired,
+  onAddToFavourite: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onShare: PropTypes.func.isRequired,
   onPress: PropTypes.func.isRequired,
