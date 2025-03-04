@@ -3,10 +3,15 @@ import { Colors } from "./Colors";
 
 const headerStyles = StyleSheet.create({
   headerContainer: {
-    backgroundColor: Colors.light.buttonBackground,
-    paddingVertical: 20,
-    paddingHorizontal: 15,
     marginTop: 20,
+    backgroundColor: Colors.light.buttonBackground,
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    borderBottomLeftRadius: 15,
+    borderBottomRightRadius: 15,
+    elevation: 4,
+    borderBottomWidth: 1,
+    borderTopColor: Colors.light.buttonBackground,
   },
   topRow: {
     flexDirection: "row",

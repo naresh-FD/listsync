@@ -2,7 +2,13 @@ import React, { useState } from "react";
 import { Menu, IconButton } from "react-native-paper";
 import PropTypes from "prop-types";
 
-const ListMenu = ({ listData, onEdit, onDelete, onShare }) => {
+const ListMenu = ({
+  listData,
+  onEdit,
+  onAddToFavourite,
+  onDelete,
+  onShare,
+}) => {
   const [visibleMenu, setVisibleMenu] = useState(null);
 
   const openMenu = (uid) => setVisibleMenu(uid);
@@ -20,6 +26,10 @@ const ListMenu = ({ listData, onEdit, onDelete, onShare }) => {
         />
       }
     >
+      <Menu.Item
+        onPress={() => onAddToFavourite(listData)}
+        title="Add To Favourite"
+      />
       <Menu.Item onPress={() => onEdit(listData.uid)} title="Edit" />
       <Menu.Item onPress={() => onDelete(listData.uid)} title="Delete" />
       <Menu.Item
