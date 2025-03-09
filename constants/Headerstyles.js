@@ -25,6 +25,14 @@ const headerStyles = StyleSheet.create({
     flex: 1,
     textAlign: "center",
   },
+  headerTitleSingle: {
+    color: "white",
+    fontSize: 20,
+    fontWeight: "bold",
+    flex: 1,
+    textAlign: "center",
+    marginRight: 30,
+  },
   profileImage: {
     width: 40,
     height: 40,
@@ -53,6 +61,9 @@ const headerStyles = StyleSheet.create({
 
   iconColor: {
     color: "white",
+  },
+  backButton: {
+    padding: 8,
   },
 });
 

@@ -20,6 +20,7 @@ import { checkSourceListInFavouriteList } from "../util/helper";
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
   const router = useRouter();
+  const [isListFavourite, setIsListFavourite] = useState(false);
 
   const loadTodos = async () => {
     const storedTodos = await AsyncStorage.getItem("todos");
@@ -149,9 +150,27 @@ const TodoList = () => {
     }
   };
 
+  const checkIsListFavourite = async () => {
+    try {
+      const isListFavourite = await AsyncStorage.getItem("isFavListSelected");
+      let favObject = JSON.parse(isListFavourite);
+      setIsListFavourite(favObject);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
     //Create Favourite List
     initializeFavouriteList();
+    checkIsListFavourite();
+
+    return async () => {
+      const isListFavourite = await AsyncStorage.getItem("isFavListSelected");
+      if (JSON.parse(isListFavourite) === true) {
+        await AsyncStorage.setItem("isFavListSelected", JSON.stringify(false));
+      }
+    };
   }, []);
 
   const showFavouriteList = async () => {
@@ -165,7 +184,7 @@ const TodoList = () => {
 
   return (
     <>
-      <Header />
+      {<Header headerType={isListFavourite} router={router} />}
       <View style={styles.container}>
         {/* <Pressable onPress={showFavouriteList}>
           <Text>View Favourite</Text>
@@ -193,7 +212,7 @@ const TodoList = () => {
           <AddButton onPress={() => router.push("/ListManager/AddTodo")} />
         </View>
       </View>
-      <BottomNavigationBar page="Home" />
+      <BottomNavigationBar page={isListFavourite ? "Favourite" : "Home"} />
     </>
   );
 };
