@@ -11,6 +11,12 @@ import AuthGuard from "./AuthGuard";
 
 const Stack = createStackNavigator();
 
+const withAuthGuard = (Component) => (props) => (
+  <AuthGuard {...props}>
+    <Component {...props} />
+  </AuthGuard>
+);
+
 const AppNavigator = () => {
   return (
     <NavigationContainer>
@@ -18,30 +24,9 @@ const AppNavigator = () => {
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="GoogleSignIn" component={GoogleSignInScreen} />
-        <Stack.Screen
-          name="ListManager"
-          component={(props) => (
-            <AuthGuard {...props}>
-              <ListManagerScreen {...props} />
-            </AuthGuard>
-          )}
-        />
-        <Stack.Screen
-          name="BillsScreen"
-          component={(props) => (
-            <AuthGuard {...props}>
-              <BillsScreen {...props} />
-            </AuthGuard> 
-          )}
-        />
-        <Stack.Screen
-          name="Settings"
-          component={(props) => (
-            <AuthGuard {...props}>
-              <SettingsScreen {...props} />
-            </AuthGuard>
-          )}
-        />
+        <Stack.Screen name="ListManager" component={withAuthGuard(ListManagerScreen)} />
+        <Stack.Screen name="BillsScreen" component={withAuthGuard(BillsScreen)} />
+        <Stack.Screen name="Settings" component={withAuthGuard(SettingsScreen)} />
       </Stack.Navigator>
     </NavigationContainer>
   );

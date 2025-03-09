@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import DocumentScanner from "react-native-document-scanner-plugin";
 import * as FileSystem from "expo-file-system";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const ScanButton = ({ addBill }) => {
   const [fileNameModalVisible, setFileNameModalVisible] = useState(false);
@@ -35,7 +36,7 @@ const ScanButton = ({ addBill }) => {
     try {
       console.log("[DEBUG] Starting save process...");
 
-      const timestamp = new Date().toISOString().replace(/[:.]/g, "-"); 
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       const finalName = fileNameInput.trim()
         ? `${fileNameInput.replace(/[^a-z0-9]/gi, "_")}.jpg`
         : `document_${timestamp}.jpg`;
@@ -65,8 +66,8 @@ const ScanButton = ({ addBill }) => {
 
   return (
     <>
-      <Pressable style={styles.button} onPress={scanDocument}>
-        <Text style={styles.buttonText}>Scan Doc</Text>
+      <Pressable style={styles.floatingButton} onPress={scanDocument}>
+        <MaterialIcons name="document-scanner" size={24} color="white" />
       </Pressable>
 
       <Modal
@@ -101,15 +102,17 @@ const ScanButton = ({ addBill }) => {
 };
 
 const styles = StyleSheet.create({
-  button: {
+  floatingButton: {
     backgroundColor: "#007bff",
-    padding: 15,
-    borderRadius: 25,
-    position: "absolute",
-    bottom: 20,
-    width: "90%",
-    alignSelf: "center",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: "center",
     alignItems: "center",
+    position: "absolute",
+    bottom: 100,
+    right: 20,
+    elevation: 5,
   },
   buttonText: {
     color: "#fff",

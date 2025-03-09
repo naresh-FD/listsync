@@ -16,7 +16,7 @@ import RenderTodoItem from "./components/RenderTodoItem";
 import AddButton from "./components/AddButton";
 import BottomNavigationBar from "../navigation/BottomNavigationBar";
 import { checkSourceListInFavouriteList } from "../util/helper";
- 
+
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
   const router = useRouter();
@@ -167,10 +167,6 @@ const TodoList = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0047cc" }}>
       <Header />
       <View style={styles.container}>
-        {/* <Pressable onPress={showFavouriteList}>
-          <Text>View Favourite</Text>
-        </Pressable> */}
-
         <View style={styles.body}>
           {todos.length !== 0 ? (
             <FlatList

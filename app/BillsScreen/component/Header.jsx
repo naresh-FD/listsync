@@ -19,7 +19,7 @@ const Header = ({ title }) => {
       <View style={styles.topRow}>
         <TouchableOpacity
           onPress={() => {
-            router.goBack();
+            router.back();
           }}
           style={styles.backButton}
         >
