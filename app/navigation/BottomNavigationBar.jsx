@@ -58,8 +58,8 @@ const BottomNavigationBar = ({ page }) => {
           >
             <MaterialIcons
               name={route.icon}
-              size={30}
-              color={isSelected ? "blue" : "black"}
+              size={25}
+              color={isSelected ? "blue" : "#565656"}
               style={styles.navigationItemIcon}
             />
             <Text
@@ -91,8 +91,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingLeft: 10,
     paddingRight: 10,
-    paddingTop: 5, // Added top padding
-    shadowColor: "#000", // Added shadow properties
+    paddingTop: 5,  
+    paddingBottom: 8,  
+    shadowColor: "#000",  
     shadowOffset: {
       width: 0,
       height: -2,
@@ -108,12 +109,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   navigationItemIcon: {
-    height: 30,
-    width: 30,
+    height: 25,  
+    width: 25, 
+    marginBottom: 2, 
   },
   navigationItemText: {
     fontSize: 12,
     textAlign: "center",
+    padding: 0,
+    margin: 0,
   },
 });
 
