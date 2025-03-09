@@ -1,9 +1,8 @@
 import React from "react";
-import { Stack } from "expo-router"; // Use Expo Router's Stack
+import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
-import Loading from "../components/loading";
 import { Provider as PaperProvider } from "react-native-paper";
-import AuthGuard from "./navigation/AuthGuard"; // Ensure AuthGuard is properly exported
+import AuthGuard from "./navigation/AuthGuard";
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -11,13 +10,12 @@ export default function RootLayout() {
   });
 
   if (!fontsLoaded) {
-    return <Loading />;
+    return;
   }
 
   return (
     <PaperProvider>
       <AuthGuard>
-        {/* Use Expo Router's Stack for navigation */}
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="auth/WelcomeScreen/index" />
           <Stack.Screen name="index" />
@@ -33,6 +31,10 @@ export default function RootLayout() {
           <Stack.Screen
             name="Settings/index"
             options={{ title: "Settings", headerShown: false }}
+          />
+          <Stack.Screen
+            name="BillsScreen/index"
+            options={{ title: "BillsScreen", headerShown: false }}
           />
         </Stack>
       </AuthGuard>

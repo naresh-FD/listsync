@@ -1,9 +1,10 @@
-import React, { useLayoutEffect } from "react";
+import React from "react";
 import { View, Text, Switch, StyleSheet, Pressable } from "react-native";
 import BottomNavigationBar from "../navigation/BottomNavigationBar";
 import { Title } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import Loading from "../../components/loading";
 
 const SettingsScreen = () => {
   const router = useRouter();
@@ -25,11 +26,27 @@ const SettingsScreen = () => {
   //   });
   // }, [navigation]);
 
+  // const logout = async () => {
+  //   try {
+  //     router.replace("auth/WelcomeScreen");
+  //     await AsyncStorage.removeItem("user");
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+
+  const [loading, setLoading] = React.useState(false);
   const logout = async () => {
+    setLoading(true);
     try {
+      await AsyncStorage.clear();
+      console.log("AsyncStorage cleared");
+      setNotificationsEnabled(false);
+      setDarkModeEnabled(false);
+      setLoading(false);
       router.replace("auth/WelcomeScreen");
-      await AsyncStorage.removeItem("user");
     } catch (err) {
+      setLoading(false);
       console.log(err);
     }
   };
@@ -37,32 +54,39 @@ const SettingsScreen = () => {
   return (
     <>
       <View style={styles.container}>
-        <View style={styles.body}>
-          <View style={styles.bodyTitleSection}>
-            <Title style={styles.bodyTitle}>Settings</Title>
+        {loading ? (
+          <>
+            <Loading />
+            <Text>Loading...</Text>
+          </>
+        ) : (
+          <View style={styles.body}>
+            <View style={styles.bodyTitleSection}>
+              <Title style={styles.bodyTitle}>Settings</Title>
+            </View>
+            <View style={styles.settingRow}>
+              <Text style={styles.settingLabel}>Enable Notifications</Text>
+              <Switch
+                thumbColor="#007BFF"
+                value={notificationsEnabled}
+                onValueChange={handleNotificationsToggle}
+              />
+            </View>
+            {/* <View style={styles.settingRow}>
+              <Text style={styles.settingLabel}>Dark Mode</Text>
+              <Switch
+                thumbColor="#007BFF"
+                value={darkModeEnabled}
+                onValueChange={handleDarkModeToggle}
+              />
+            </View> */}
+            <View style={styles.logoutSection}>
+              <Pressable style={styles.logout} onPress={logout}>
+                <Text style={styles.logoutText}>LOGOUT</Text>
+              </Pressable>
+            </View>
           </View>
-          <View style={styles.settingRow}>
-            <Text style={styles.settingLabel}>Enable Notifications</Text>
-            <Switch
-              thumbColor="#007BFF"
-              value={notificationsEnabled}
-              onValueChange={handleNotificationsToggle}
-            />
-          </View>
-          {/* <View style={styles.settingRow}>
-            <Text style={styles.settingLabel}>Dark Mode</Text>
-            <Switch
-              thumbColor="#007BFF"
-              value={darkModeEnabled}
-              onValueChange={handleDarkModeToggle}
-            />
-          </View> */}
-          <View style={styles.logoutSection}>
-            <Pressable style={styles.logout} onPress={logout}>
-              <Text style={styles.logoutText}>LOGOUT</Text>
-            </Pressable>
-          </View>
-        </View>
+        )}
       </View>
       <BottomNavigationBar page="Settings" />
     </>

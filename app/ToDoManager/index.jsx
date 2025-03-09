@@ -6,6 +6,7 @@ import {
   TextInput,
   ScrollView,
   ToastAndroid,
+  SafeAreaView,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
@@ -18,6 +19,9 @@ import { Ionicons } from "@expo/vector-icons";
 import FlatListItem from "./components/FlatListItem";
 import { setToLocalStorage } from "../util/helper";
 import NewListItemField from "./components/NewListItemField";
+import TapToAddItem from "./components/TapToAddItem";
+import ToDoRecommendation from "./components/ToDoRecommendation";
+import { recommendedItems } from "../util/constants";
 const ToDoManager = () => {
   //router
   const router = useRouter();
@@ -116,6 +120,7 @@ const ToDoManager = () => {
       } else {
         listItems = listDataObject.data;
       }
+      //  want combine both listItems and recommendedItems
       let groupedItems = groupCategory(listItems);
       setListItems(groupedItems);
 
@@ -199,31 +204,6 @@ const ToDoManager = () => {
       console.log("err", err);
     }
   };
-  const TapToAddItem = useMemo(() => {
-    let isitemAvailable = Object.values(listItems).find((cate) =>
-      cate.find((item) => item.title.toLowerCase() == searchQuery.toLowerCase())
-    );
-
-    const createItem = () => {
-      addNewItem(searchQuery);
-    };
-    if (searchQuery.length !== 0 && isitemAvailable === undefined) {
-      return (
-        <View style={styles.tapToAddWrapper}>
-          <Pressable
-            onPress={() => createItem()}
-            style={styles.tapToAddContainer}
-          >
-            <Text style={styles.tapToAddText}>
-              Add <Text style={styles.tapToAddHighlight}>{searchQuery}</Text>
-            </Text>
-          </Pressable>
-        </View>
-      );
-    } else {
-      return null;
-    }
-  }, [searchQuery, listItems]);
 
   // list menu functions start
   const deleteAllItems = async () => {
@@ -322,34 +302,32 @@ const ToDoManager = () => {
 
   // list menu functions end
   return listData ? (
-    <View style={styles.toDoContainer}>
-      <View style={styles.body}>
-        <ToDoHeader
-          listData={
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#0047cc" }}>
+      <View style={styles.toDoContainer}>
+        <View style={styles.body}>
+          <ToDoHeader
+            listData={
             typeof listData == "string" ? JSON.parse(listData) : listData
           }
-          router={router}
-          isSelectionOn={isSelectionOn}
-          enableSearch={enableSearch}
-          deleteAllItems={deleteAllItems}
-          addToFavouriteList={addToFavouriteList}
+            router={router}
+            isSelectionOn={isSelectionOn}
+            enableSearch={enableSearch}
+            deleteAllItems={deleteAllItems}
+            addToFavouriteList={addToFavouriteList}
           selectedItems={selectedItems}
           enableEditMode={enableEditMode}
-          cancelSelection={cancelSelection}
-          selectAllItems={selectAllItems}
-          unSelectAllItems={unSelectAllItems}
-          invertSelection={invertSelection}
-          visibleMenu={visibleMenu}
-          deleteSelectedItems={deleteSelectedItems}
-          isEditModeOn={isEditModeOn}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          setVisibleMenu={setVisibleMenu}
-        />
-        <View style={styles.bodyList}>
-          <ScrollView style={styles.bodyScrollViewStyles}>
-            {TapToAddItem}
-            {RenderFlatListView}
+            cancelSelection={cancelSelection}
+            selectAllItems={selectAllItems}
+            unSelectAllItems={unSelectAllItems}
+            invertSelection={invertSelection}
+            visibleMenu={visibleMenu}
+            deleteSelectedItems={deleteSelectedItems}
+            isEditModeOn={isEditModeOn}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            setVisibleMenu={setVisibleMenu}
+          />
+          <View style={styles.bodyList}>
             {isAddFieldOpen ? (
               <NewListItemField
                 listData={listData}
@@ -357,12 +335,21 @@ const ToDoManager = () => {
                 setToLocalStorage={setToLocalStorage}
               />
             ) : null}
-          </ScrollView>
+            <ScrollView style={styles.bodyScrollViewStyles}>
+              <TapToAddItem
+                searchQuery={searchQuery}
+                listItems={listItems}
+                onCreateItem={addNewItem}
+              />
+              {RenderFlatListView}
+              {/* <ToDoRecommendation /> */}
+            </ScrollView>
+          </View>
         </View>
+        <View style={styles.footer}></View>
+        <AddItemButton />
       </View>
-      <View style={styles.footer}></View>
-      <AddItemButton />
-    </View>
+    </SafeAreaView>
   ) : null;
 };
 

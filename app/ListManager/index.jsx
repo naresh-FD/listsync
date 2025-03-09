@@ -4,9 +4,9 @@ import {
   Text,
   FlatList,
   StyleSheet,
-  Pressable,
   ToastAndroid,
   Alert,
+  SafeAreaView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -16,7 +16,7 @@ import RenderTodoItem from "./components/RenderTodoItem";
 import AddButton from "./components/AddButton";
 import BottomNavigationBar from "../navigation/BottomNavigationBar";
 import { checkSourceListInFavouriteList } from "../util/helper";
-
+ 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
   const router = useRouter();
@@ -154,17 +154,17 @@ const TodoList = () => {
     initializeFavouriteList();
   }, []);
 
-  const showFavouriteList = async () => {
-    try {
-      const userFavouriteList = await AsyncStorage.getItem("favouriteList");
-      // console.log(userFavouriteList);
-    } catch (err) {
-      console.log("err", err);
-    }
-  };
+  // const showFavouriteList = async () => {
+  //   try {
+  //     const userFavouriteList = await AsyncStorage.getItem("favouriteList");
+  //     // console.log(userFavouriteList);
+  //   } catch (err) {
+  //     console.log("err", err);
+  //   }
+  // };
 
   return (
-    <>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#0047cc" }}>
       <Header />
       <View style={styles.container}>
         {/* <Pressable onPress={showFavouriteList}>
@@ -194,7 +194,7 @@ const TodoList = () => {
         </View>
       </View>
       <BottomNavigationBar page="Home" />
-    </>
+    </SafeAreaView>
   );
 };
 

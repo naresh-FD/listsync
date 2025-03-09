@@ -13,6 +13,11 @@ const BottomNavigationBar = ({ page }) => {
       route: "ListManager",
     },
     {
+      name: "BillsScreen",
+      icon: "document-scanner",
+      route: "BillsScreen",
+    },
+    {
       name: "Favourite",
       icon: "favorite",
       route: "ListManager",
@@ -71,7 +76,6 @@ const BottomNavigationBar = ({ page }) => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   navigationContainer: {
     height: 60,
@@ -83,13 +87,21 @@ const styles = StyleSheet.create({
     bottom: 0,
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-evenly",
     flexDirection: "row",
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 5, // Added top padding
+    shadowColor: "#000", // Added shadow properties
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   navigationItem: {
     height: 40,
-    marginLeft: 40,
-    marginRight: 40,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -101,8 +113,10 @@ const styles = StyleSheet.create({
   },
   navigationItemText: {
     fontSize: 12,
+    textAlign: "center",
   },
 });
+
 BottomNavigationBar.propTypes = {
   page: PropTypes.string.isRequired,
 };

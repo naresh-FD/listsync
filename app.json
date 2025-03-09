@@ -48,6 +48,7 @@
       "eas": {
         "projectId": "53ff6a1f-b83d-4cb3-8ec0-92392fed296a"
       }
-    }
+    },
+    "permissions": ["READ_MEDIA_IMAGES", "CAMERA"]
   }
 }

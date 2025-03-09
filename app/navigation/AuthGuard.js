@@ -9,6 +9,7 @@ const AuthGuard = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const router = useRouter();
 
+  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
