@@ -33,6 +33,7 @@
     "expo-auth-session": "^6.0.3",
     "expo-constants": "~16.0.2",
     "expo-dev-client": "~4.0.29",
+    "expo-file-system": "~17.0.1",
     "expo-font": "~12.0.10",
     "expo-linking": "~6.3.1",
     "expo-router": "~3.5.24",
@@ -42,6 +43,7 @@
     "expo-web-browser": "~13.0.3",
     "firebase": "^11.1.0",
     "lottie-react-native": "6.7.0",
+    "pdf-lib": "^1.17.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.74.5",
@@ -55,8 +57,7 @@
     "react-native-svg": "15.2.0",
     "react-native-vector-icons": "^10.1.0",
     "react-native-web": "~0.19.12",
-    "styled-components": "^6.1.13",
-    "expo-file-system": "~17.0.1"
+    "styled-components": "^6.1.13"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
