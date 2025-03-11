@@ -19,7 +19,11 @@ const Header = ({ title }) => {
       <View style={styles.topRow}>
         <TouchableOpacity
           onPress={() => {
-            router.back();
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace("ListManager");
+            }
           }}
           style={styles.backButton}
         >

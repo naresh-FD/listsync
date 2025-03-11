@@ -10,10 +10,8 @@ const BillScanner = () => {
     setBills((prevBills) => [...prevBills, fileName]);
   };
 
-  console.log("bills", bills);
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionTitle}>Today</Text>
       <BillList bills={bills} />
       <ScanButton addBill={addBill} />
     </View>

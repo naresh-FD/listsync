@@ -1,16 +1,9 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  StyleSheet,
-  Alert,
-  Modal,
-} from "react-native";
+import { View, Text, TextInput, Pressable, StyleSheet, Alert, Modal } from "react-native";
 import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
 import PropTypes from "prop-types";
-import { FontAwesome5 } from "@expo/vector-icons"; // Import FontAwesome5 icons
+import { FontAwesome5 } from "@expo/vector-icons";
 
 const SaveFileModal = ({ setVisible, tempUri, addBill, allowFormats }) => {
   const [fileNameInput, setFileNameInput] = useState("");
@@ -20,32 +13,21 @@ const SaveFileModal = ({ setVisible, tempUri, addBill, allowFormats }) => {
 
   const handleSave = async () => {
     try {
-      console.log("[DEBUG] Starting save process...");
-
-      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       const finalName = fileNameInput.trim()
         ? `${fileNameInput.replace(/[^a-z0-9]/gi, "_")}.${selectedFormat}`
         : `document_${timestamp}.${selectedFormat}`;
 
       const destinationPath = `${FileSystem.documentDirectory}${finalName}`;
 
-      console.log("[DEBUG] Source:", tempUri);
-      console.log("[DEBUG] Destination:", destinationPath);
-
-      const sourceInfo = await FileSystem.getInfoAsync(tempUri);
-      if (!sourceInfo.exists) throw new Error("Source file not accessible");
-
       await FileSystem.copyAsync({
         from: tempUri,
         to: destinationPath,
       });
 
-      console.log("[DEBUG] Copy completed");
       addBill(finalName);
       Alert.alert("Success", `File saved as: ${finalName}`);
       setVisible(false);
     } catch (error) {
-      console.error("[ERROR] Save failed:", error);
       Alert.alert("Error", `Save failed: ${error.message}`);
     }
   };
@@ -53,29 +35,10 @@ const SaveFileModal = ({ setVisible, tempUri, addBill, allowFormats }) => {
   const getIcon = (format) => {
     switch (format) {
       case "jpg":
-        return (
-          <FontAwesome5
-            name="file-image"
-            size={24}
-            color={selectedFormat === "jpg" ? "#fff" : "#007bff"}
-          />
-        );
       case "png":
-        return (
-          <FontAwesome5
-            name="file-image"
-            size={24}
-            color={selectedFormat === "png" ? "#fff" : "#007bff"}
-          />
-        );
+        return <FontAwesome5 name="file-image" size={24} color={selectedFormat === format ? "#fff" : "#007bff"} />;
       case "pdf":
-        return (
-          <FontAwesome5
-            name="file-pdf"
-            size={24}
-            color={selectedFormat === "pdf" ? "#fff" : "#007bff"}
-          />
-        );
+        return <FontAwesome5 name="file-pdf" size={24} color={selectedFormat === "pdf" ? "#fff" : "#007bff"} />;
       default:
         return null;
     }
@@ -86,42 +49,37 @@ const SaveFileModal = ({ setVisible, tempUri, addBill, allowFormats }) => {
       <View style={styles.overlay}>
         <View style={styles.popupContainer}>
           <Text style={styles.title}>Save Your Document</Text>
-          <View style={styles.contentContainer}>
-            <TextInput
-              style={styles.input}
-              value={fileNameInput}
-              onChangeText={setFileNameInput}
-              placeholder={defaultFileName}
-              placeholderTextColor="#888"
-            />
-            <Text style={styles.subtitle}>Choose Format</Text>
-            <View style={styles.formatOptions}>
-              {allowFormats.map((format) => (
-                <Pressable
-                  key={format}
-                  style={[
-                    styles.formatButton,
-                    selectedFormat === format && styles.selectedFormat,
-                  ]}
-                  onPress={() => setSelectedFormat(format)}
-                >
-                  {getIcon(format)}
-                </Pressable>
-              ))}
-            </View>
-            <Pressable style={styles.saveButton} onPress={handleSave}>
-              <Text style={styles.buttonText}>Save</Text>
+          <TextInput
+            style={styles.input}
+            value={fileNameInput}
+            onChangeText={setFileNameInput}
+            placeholder="Document Name"
+            placeholderTextColor="#888"
+          />
+          <Text style={styles.subtitle}>Choose Format</Text>
+          <View style={styles.formatOptions}>
+            {allowFormats.map((format) => (
+              <Pressable
+                key={format}
+                style={[styles.formatButton, selectedFormat === format && styles.selectedFormat]}
+                onPress={() => setSelectedFormat(format)}
+              >
+              {getIcon(format)}
+              <Text style={[styles.formatText, selectedFormat === format && styles.selectedFormatText]}>
+                {format.toUpperCase()}
+              </Text>
             </Pressable>
-            <Pressable
-              style={styles.cancelButton}
-              onPress={() => setVisible(false)}
-            >
-              <Text style={styles.buttonText}>Cancel</Text>
-            </Pressable>
+            ))}
           </View>
+          <Pressable style={styles.saveButton} onPress={handleSave}>
+            <Text style={styles.buttonText}>Save</Text>
+          </Pressable>
+          <Pressable style={styles.cancelButton} onPress={() => setVisible(false)}>
+            <Text style={styles.buttonText}>Cancel</Text>
+          </Pressable>
         </View>
-      </View>
-    </Modal>
+        </View>
+      </Modal>
   );
 };
 
@@ -147,10 +105,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#333",
     marginBottom: 40,
-  },
-  contentContainer: {
-    width: "100%",
-    alignItems: "center",
   },
   subtitle: {
     fontSize: 18,
@@ -183,6 +137,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "#fff",
     marginHorizontal: 5,
+    flexDirection: "row",
+    alignItems: "center",
   },
   selectedFormat: {
     backgroundColor: "#007bff",
@@ -194,6 +150,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "#007bff",
+    marginLeft: 5,
   },
   saveButton: {
     backgroundColor: "#007bff",
@@ -203,19 +160,13 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 15,
   },
-  cancelButton: {
-    backgroundColor: "#dc3545",
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
-    width: "100%",
-  },
   buttonText: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
   },
 });
+
 SaveFileModal.propTypes = {
   setVisible: PropTypes.func.isRequired,
   tempUri: PropTypes.string.isRequired,
