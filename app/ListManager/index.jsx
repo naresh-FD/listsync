@@ -23,9 +23,24 @@ const TodoList = () => {
   const [isListFavourite, setIsListFavourite] = useState(false);
 
   const loadTodos = async () => {
-    const storedTodos = await AsyncStorage.getItem("todos");
-    if (storedTodos) {
-      setTodos(JSON.parse(storedTodos));
+    try {
+      //Check Main List and Favourite List and Load to List
+      const isFavouriteListSelected = await AsyncStorage.getItem(
+        "isFavListSelected"
+      );
+      if (JSON.parse(isFavouriteListSelected)) {
+        const userFavouriteList = await AsyncStorage.getItem("favouriteList");
+        if (userFavouriteList) {
+          setTodos(JSON.parse(userFavouriteList).data);
+        }
+      } else {
+        const storedTodos = await AsyncStorage.getItem("todos");
+        if (storedTodos) {
+          setTodos(JSON.parse(storedTodos));
+        }
+      }
+    } catch (err) {
+      console.log("loadToDo ERR - ", err);
     }
   };
 
@@ -75,30 +90,53 @@ const TodoList = () => {
       let favListObject = JSON.parse(userFavouriteList);
       let favListData = favListObject.data;
 
-      //List
-      let selectedListData = JSON.parse(listData.data);
-      let selectedListId = listData.uid;
+      const isObjectInArray = (favListData, listData) => {
+        return favListData.some((item) => item.uid === listData.uid);
+      };
+      if (!isObjectInArray(favListData, listData)) {
+        favListData.push(listData);
+      } else {
+        ToastAndroid.show("List already in Favourite List", ToastAndroid.SHORT);
+      }
 
-      //Add Item to Fav List
-      selectedListData.forEach((item) => {
-        if (!favListData.includes(item)) {
-          favListData.push(item);
-        }
-      });
       favListObject.data = favListData;
-
-      //Add List UID to source
-      favListObject.source.push(selectedListId);
 
       //Set New List to Async Storage
       await AsyncStorage.setItem(
         "favouriteList",
         JSON.stringify(favListObject)
       );
-
-      ToastAndroid.show("Added List to Favourite List", ToastAndroid.SHORT);
     } catch (err) {
       console.log("Err - Add to Fav - List ", err);
+    } finally {
+      ToastAndroid.show("Added List to Favourite List", ToastAndroid.SHORT);
+    }
+  };
+
+  const handleRemoveFromFavourite = async (listData) => {
+    try {
+      //Fav List
+      const userFavouriteList = await AsyncStorage.getItem("favouriteList");
+      let favListObject = JSON.parse(userFavouriteList);
+      let favListData = favListObject.data;
+
+      const filterListDataFromFavList = (favListData, listData) => {
+        return favListData.filter((item) => item.uid !== listData.uid);
+      };
+
+      const updatedArray = filterListDataFromFavList(favListData, listData);
+
+      favListObject.data = updatedArray;
+      setTodos(updatedArray);
+      //Set New List to Async Storage
+      await AsyncStorage.setItem(
+        "favouriteList",
+        JSON.stringify(favListObject)
+      );
+    } catch (err) {
+      console.log("Err - Remove from Fav - List", err);
+    } finally {
+      ToastAndroid.show("Removed List from Favourite List", ToastAndroid.SHORT);
     }
   };
 
@@ -136,7 +174,6 @@ const TodoList = () => {
           title: "Favourite List",
           notes: "Personal Favourite List",
           data: [],
-          source: [],
           admin: userObject.email,
           collaborators: [userObject.email],
         };
@@ -200,6 +237,7 @@ const TodoList = () => {
                   item={item}
                   onEdit={handleEdit}
                   onAddToFavourite={handleAddToFavourite}
+                  onRemoveFromFavourite={handleRemoveFromFavourite}
                   onDelete={handleDelete}
                   onShare={handleShare}
                   onPress={goToListItems}

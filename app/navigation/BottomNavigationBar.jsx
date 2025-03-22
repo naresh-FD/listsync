@@ -29,14 +29,10 @@ const BottomNavigationBar = ({ page }) => {
       const { route, name } = item;
       if (name === "Favourite") {
         await AsyncStorage.setItem("isFavListSelected", JSON.stringify(true));
-        // const userFavouriteList = await AsyncStorage.getItem("favouriteList");
-        // const stringData = JSON.stringify(userFavouriteList);
-        // console.log("32", stringData);
         router.push(`/ListManager`);
       } else {
-        if (page !== name) {
-          router.replace(route);
-        }
+        await AsyncStorage.setItem("isFavListSelected", JSON.stringify(false));
+        router.push(route);
       }
     } catch (err) {
       console.log(err);

@@ -8,6 +8,7 @@ const RenderTodoItem = ({
   item,
   onEdit,
   onAddToFavourite,
+  onRemoveFromFavourite,
   onDelete,
   onShare,
   onPress,
@@ -22,6 +23,7 @@ const RenderTodoItem = ({
           listData={listData}
           onEdit={onEdit}
           onAddToFavourite={onAddToFavourite}
+          onRemoveFromFavourite={onRemoveFromFavourite}
           onDelete={onDelete}
           onShare={onShare}
         />
@@ -52,6 +54,7 @@ RenderTodoItem.propTypes = {
   item: PropTypes.object.isRequired,
   onEdit: PropTypes.func.isRequired,
   onAddToFavourite: PropTypes.func.isRequired,
+  onRemoveFromFavourite: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onShare: PropTypes.func.isRequired,
   onPress: PropTypes.func.isRequired,

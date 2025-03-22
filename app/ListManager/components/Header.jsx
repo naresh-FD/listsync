@@ -52,8 +52,8 @@ const Header = ({
       case false:
         return (
           <View style={headerStyles.topRow}>
-            <IconButton icon="menu" size={24} iconColor="white" />;
-            <Text style={[headerStyles.headerTitle]}>Hi, {user?.name}</Text>;
+            <IconButton icon="menu" size={24} iconColor="white" />
+            <Text style={[headerStyles.headerTitle]}>Hi, {user?.name}</Text>
             <Image
               source={{
                 uri: user
