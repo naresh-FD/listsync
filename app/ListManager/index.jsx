@@ -223,10 +223,6 @@ const TodoList = () => {
     <>
       {<Header headerType={isListFavourite} router={router} />}
       <View style={styles.container}>
-        {/* <Pressable onPress={showFavouriteList}>
-          <Text>View Favourite</Text>
-        </Pressable> */}
-
         <View style={styles.body}>
           {todos.length !== 0 ? (
             <FlatList
@@ -237,10 +233,10 @@ const TodoList = () => {
                   item={item}
                   onEdit={handleEdit}
                   onAddToFavourite={handleAddToFavourite}
-                  onRemoveFromFavourite={handleRemoveFromFavourite}
                   onDelete={handleDelete}
                   onShare={handleShare}
                   onPress={goToListItems}
+                  isMenuAvailable={true}
                 />
               )}
             />

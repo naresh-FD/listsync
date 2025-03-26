@@ -24,6 +24,7 @@ const ToDoHeader = ({
   searchQuery,
   setSearchQuery,
   setVisibleMenu,
+  isOptionsOn,
 }) => {
   const openMenu = (uid) => {
     setVisibleMenu(uid);
@@ -43,45 +44,53 @@ const ToDoHeader = ({
         >
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
-        {/* {console.log("45", listData.title)} */}
-        <Text style={styles.title}>{listData.title}</Text>
-        <Menu
-          visible={visibleMenu === listData.uid}
-          onDismiss={closeMenu}
-          anchor={
-            <IconButton
-              iconColor="white"
-              icon="dots-vertical"
-              onPress={() => openMenu(listData.uid)}
-            />
-          }
-        >
-          {!isSelectionOn ? (
-            <>
-              <Menu.Item onPress={() => deleteAllItems()} title="Delete All" />
-              <Menu.Item
-                onPress={() => enableEditMode()}
-                title={!isEditModeOn ? "Edit" : "Cancel"}
+        <Text style={styles.title}>
+          {listData.title ? listData.title : "Select List"}
+        </Text>
+        {isOptionsOn ? (
+          <Menu
+            visible={visibleMenu === listData.uid}
+            onDismiss={closeMenu}
+            anchor={
+              <IconButton
+                iconColor="white"
+                icon="dots-vertical"
+                onPress={() => openMenu(listData.uid)}
               />
-            </>
-          ) : (
-            <>
-              {listData.title !== "Favourite List" ? (
+            }
+          >
+            {!isSelectionOn ? (
+              <>
                 <Menu.Item
-                  onPress={() => addToFavouriteList()}
-                  title="Add to Favourite"
+                  onPress={() => deleteAllItems()}
+                  title="Delete All"
                 />
-              ) : null}
-              {selectedItems.length !== 0 ? (
-                <Menu.Item onPress={deleteSelectedItems} title="Delete" />
-              ) : null}
-              <Menu.Item onPress={selectAllItems} title="Select All" />
-              <Menu.Item onPress={unSelectAllItems} title="UnSelect All" />
-              <Divider />
-              <Menu.Item onPress={cancelSelection} title="Cancel" />
-            </>
-          )}
-        </Menu>
+                <Menu.Item
+                  onPress={() => enableEditMode()}
+                  title={!isEditModeOn ? "Edit" : "Cancel"}
+                />
+              </>
+            ) : (
+              <>
+                {listData.title == "Favourite List" ? (
+                  <Menu.Item
+                    onPress={() => addToFavouriteList()}
+                    title="Add to List"
+                  />
+                ) : null}
+                {selectedItems.length !== 0 ? (
+                  <Menu.Item onPress={deleteSelectedItems} title="Delete" />
+                ) : null}
+                <Menu.Item onPress={selectAllItems} title="Select All" />
+                <Menu.Item onPress={unSelectAllItems} title="UnSelect All" />
+                <Divider />
+                <Menu.Item onPress={cancelSelection} title="Cancel" />
+              </>
+            )}
+          </Menu>
+        ) : (
+          <View />
+        )}
       </View>
 
       {/* Search Section */}
@@ -152,15 +161,15 @@ const styles = StyleSheet.create({
 ToDoHeader.propTypes = {
   listData: PropTypes.object.isRequired,
   router: PropTypes.object.isRequired,
-  isSelectionOn: PropTypes.bool.isRequired,
   enableSearch: PropTypes.func.isRequired,
-  deleteAllItems: PropTypes.func.isRequired,
-  enableEditMode: PropTypes.func.isRequired,
-  cancelSelection: PropTypes.func.isRequired,
-  selectAllItems: PropTypes.func.isRequired,
-  unSelectAllItems: PropTypes.func.isRequired,
-  invertSelection: PropTypes.func.isRequired,
-  deleteSelectedItems: PropTypes.func.isRequired,
+  // isSelectionOn: PropTypes.bool.isRequired,
+  // deleteAllItems: PropTypes.func.isRequired,
+  // enableEditMode: PropTypes.func.isRequired,
+  // cancelSelection: PropTypes.func.isRequired,
+  // selectAllItems: PropTypes.func.isRequired,
+  // unSelectAllItems: PropTypes.func.isRequired,
+  // invertSelection: PropTypes.func.isRequired,
+  // deleteSelectedItems: PropTypes.func.isRequired,
   isEditModeOn: PropTypes.bool.isRequired,
   searchQuery: PropTypes.string,
   setSearchQuery: PropTypes.func,

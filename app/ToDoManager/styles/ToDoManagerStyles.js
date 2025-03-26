@@ -5,7 +5,7 @@ const styles = StyleSheet.create({
   toDoContainer: {
     width: "100%",
     height: "100%",
-    marginTop: 30,
+    paddingTop: 20,
     display: "flex",
     backgroundColor: "#F5F5F5",
   },

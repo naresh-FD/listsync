@@ -233,39 +233,10 @@ const ToDoManager = () => {
 
   const addToFavouriteList = async () => {
     try {
-      if (selectedItems.length !== 0) {
-        const userList = await AsyncStorage.getItem("favouriteList");
-        const userFavouriteList = JSON.parse(userList);
+      let selectedFavList = await AsyncStorage.getItem("selectedFavList");
+      router.push(`/ListPreviewer?item=${selectedFavList}`);
 
-        let favouriteListData = userFavouriteList.data;
-        selectedItems.forEach((item) => {
-          if (favouriteListData.length === 0) {
-            favouriteListData.push(item);
-          } else {
-            let isItemAvailable = favouriteListData.find(
-              (favItem) => favItem.uid === item.uid
-            );
-            if (!isItemAvailable) {
-              favouriteListData.push(item);
-            } else {
-              ToastAndroid.show(`Item already available!`, ToastAndroid.SHORT);
-            }
-          }
-        });
-        userFavouriteList.data = favouriteListData;
-
-        await AsyncStorage.setItem(
-          "favouriteList",
-          JSON.stringify(userFavouriteList)
-        );
-
-        //Clear Selected items for new selections
-        setSelectedItems([]);
-
-        cancelSelection();
-        setVisibleMenu(null);
-        console.log("Added items to Fav");
-      }
+      setVisibleMenu(null);
     } catch (err) {
       console.log("addToFavouriteList", err);
     }
@@ -345,6 +316,7 @@ const ToDoManager = () => {
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           setVisibleMenu={setVisibleMenu}
+          isOptionsOn={true}
         />
         <View style={styles.bodyList}>
           <ScrollView style={styles.bodyScrollViewStyles}>

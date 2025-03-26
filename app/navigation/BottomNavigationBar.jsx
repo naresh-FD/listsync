@@ -28,8 +28,8 @@ const BottomNavigationBar = ({ page }) => {
     try {
       const { route, name } = item;
       if (name === "Favourite") {
-        await AsyncStorage.setItem("isFavListSelected", JSON.stringify(true));
-        router.push(`/ListManager`);
+        const favouriteData = await AsyncStorage.getItem("favouriteList");
+        router.push(`/ToDoManager?item=${favouriteData}`);
       } else {
         await AsyncStorage.setItem("isFavListSelected", JSON.stringify(false));
         router.push(route);

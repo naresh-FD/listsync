@@ -10,7 +10,11 @@ import {
 import { Checkbox } from "react-native-paper";
 import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import styles from "../styles/ToDoManagerStyles";
-import { setToLocalStorage } from "../../util/helper";
+import {
+  setToLocalFavouriteStorage,
+  setToLocalStorage,
+} from "../../util/helper";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const FlatListItem = ({
   item,
   listData,
@@ -24,6 +28,10 @@ const FlatListItem = ({
   isEditModeOn,
   // setToLocalStorage,
 }) => {
+  //List Meta Data
+  const [listTitle, setListTitle] = useState(listData.title);
+
+  //List Item Data
   const { uid, title, description, favourite, category, author } = item;
   const [itemTitle, setItemTitle] = useState(title);
   const [itemDescription, setItemDescription] = useState(description);
@@ -99,9 +107,15 @@ const FlatListItem = ({
         const index = listItems.findIndex((listItem) => listItem === thisItem);
         listItems[index] = thisItem;
 
+        existingitems.data = listItems;
+
         listItems = JSON.stringify(listItems);
 
-        setToLocalStorage(listItems, existingitems);
+        if (listTitle == "Favourite List") {
+          setToLocalFavouriteStorage(existingitems);
+        } else {
+          setToLocalStorage(listItems, existingitems);
+        }
         editSaveToggle();
       }
     } catch (err) {
@@ -128,8 +142,14 @@ const FlatListItem = ({
           listItems.splice(index, 1);
           setListData((prev) => ({ ...prev, data: listItems }));
         }
+
+        existingItems.data = listItems;
         listItems = JSON.stringify(listItems);
-        setToLocalStorage(listItems, listData);
+        if (listTitle == "Favourite List") {
+          setToLocalFavouriteStorage(existingItems);
+        } else {
+          setToLocalStorage(listItems, listData);
+        }
       }
     } catch (err) {
       console.log("Delete Item Error -", err);
@@ -159,22 +179,28 @@ const FlatListItem = ({
     setIsSectionOn(true);
   };
 
-  const selectItem = (item) => {
-    let templist = selectedItems;
-    const tempCheck = !checked;
-    if (tempCheck) {
-      const exists = selectedItems.some(
-        (existingItem) => existingItem.uid === item.uid
-      );
-      if (!exists) {
-        templist.push(item);
+  const selectItem = async (item) => {
+    try {
+      let templist = selectedItems;
+      const tempCheck = !checked;
+      if (tempCheck) {
+        const exists = selectedItems.some(
+          (existingItem) => existingItem.uid === item.uid
+        );
+        if (!exists) {
+          templist.push(item);
+        }
+      } else {
+        const index = templist.findIndex((listItem) => listItem === item);
+        templist.splice(index, 1);
       }
-    } else {
-      const index = templist.findIndex((listItem) => listItem === item);
-      templist.splice(index, 1);
+      setSelectedItems(templist);
+      setChecked(!checked);
+
+      await AsyncStorage.setItem("selectedFavList", JSON.stringify(templist));
+    } catch (err) {
+      console.log(err);
     }
-    setSelectedItems(templist);
-    setChecked(!checked);
   };
 
   useEffect(() => {

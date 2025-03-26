@@ -8,25 +8,33 @@ const RenderTodoItem = ({
   item,
   onEdit,
   onAddToFavourite,
-  onRemoveFromFavourite,
   onDelete,
   onShare,
   onPress,
+  isMenuAvailable,
 }) => {
   const listData = item.item;
 
   return (
-    <Card style={styles.card} onPress={() => onPress(listData)}>
-      <View style={styles.cardContent}>
+    <Card
+      style={[styles.card, !isMenuAvailable ? styles.selectorCard : ""]}
+      onPress={() => onPress(listData)}
+    >
+      <View
+        style={[
+          styles.cardContent,
+          !isMenuAvailable ? styles.selectorCardContent : "",
+        ]}
+      >
         <Text style={styles.todoText}>{listData.title}</Text>
-        <ListMenu
-          listData={listData}
-          onEdit={onEdit}
-          onAddToFavourite={onAddToFavourite}
-          onRemoveFromFavourite={onRemoveFromFavourite}
-          onDelete={onDelete}
-          onShare={onShare}
-        />
+        {isMenuAvailable ? (
+          <ListMenu
+            listData={listData}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onShare={onShare}
+          />
+        ) : null}
       </View>
     </Card>
   );
@@ -46,17 +54,25 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 5,
   },
+  selectorCard: {
+    margin: 10,
+    marginBottom: 0,
+  },
+  selectorCardContent: {
+    height: "100%",
+    display: "flex",
+  },
+
   todoText: {
     fontSize: 18,
   },
 });
 RenderTodoItem.propTypes = {
   item: PropTypes.object.isRequired,
-  onEdit: PropTypes.func.isRequired,
-  onAddToFavourite: PropTypes.func.isRequired,
-  onRemoveFromFavourite: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
-  onShare: PropTypes.func.isRequired,
+  // onEdit: PropTypes.func.isRequired,
+  // onAddToFavourite: PropTypes.func.isRequired,
+  // onDelete: PropTypes.func.isRequired,
+  // onShare: PropTypes.func.isRequired,
   onPress: PropTypes.func.isRequired,
 };
 

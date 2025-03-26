@@ -3,14 +3,19 @@ import PropTypes from "prop-types";
 import { View, TextInput, Pressable } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { setToLocalStorage } from "../../util/helper";
+import {
+  setToLocalStorage,
+  setToLocalFavouriteStorage,
+} from "../../util/helper";
 import styles from "../styles/ToDoManagerStyles";
 
 const NewListItemField = ({ listData, setListData }) => {
+  //List MetaData
+  const [listTitle, setListTitle] = useState(listData.title);
+
+  //List Item Attributes
   const [itemTitle, setItemTitle] = useState("");
-
   const [itemDescription, setItemDescription] = useState("");
-
   const [itemAuthor, setItemAuthor] = useState("");
 
   const isFieldValid = () => itemTitle.length !== 0;
@@ -25,6 +30,12 @@ const NewListItemField = ({ listData, setListData }) => {
     } catch (error) {
       console.error("Error fetching user from AsyncStorage:", error);
     }
+  };
+
+  const resetFieldValues = () => {
+    setItemTitle("");
+    setItemDescription("");
+    setItemAuthor("");
   };
 
   // Fetch author when the component mounts.
@@ -55,7 +66,15 @@ const NewListItemField = ({ listData, setListData }) => {
           ...listData,
           data: existingListCopy,
         }));
-        setToLocalStorage(existingListCopy, listData);
+
+        //Favourite List
+        if (listTitle == "Favourite List") {
+          setToLocalFavouriteStorage(listData);
+        } else {
+          //Normal List
+          setToLocalStorage(existingListCopy, listData);
+        }
+        resetFieldValues();
       }
     } catch (err) {
       console.log("Error adding item:", err);

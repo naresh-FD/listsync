@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { defaultItems } from "./constants";
+
 export const getLocalStorageItem = async (object) => {
   let itemFromLocalStorage = await AsyncStorage.getItem(object);
   if (itemFromLocalStorage !== null) {
@@ -34,6 +35,18 @@ export const setToLocalStorage = async (list, listMetaData) => {
     console.log("Saved to local storage");
   } catch (err) {
     console.error("Error saving to local storage:", err);
+  }
+};
+
+export const setToLocalFavouriteStorage = async (newList) => {
+  try {
+    //Set the New Favourite List to Local Storage
+    await AsyncStorage.setItem("favouriteList", JSON.stringify(newList));
+  } catch (err) {
+    console.log(err);
+  } finally {
+    const favList = await AsyncStorage.getItem("favouriteList");
+    console.log("Fav List Updated", favList);
   }
 };
 
