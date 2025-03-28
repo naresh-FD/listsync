@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
   },
   bodyScrollViewStyles: {
     flex: 1,
+    width: "100%",
   },
 });
 

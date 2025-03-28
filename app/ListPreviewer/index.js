@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
-import { ToastAndroid, View } from "react-native";
+import { SafeAreaView, ToastAndroid, View } from "react-native";
 import styles from "./ListPreviewerStyles";
 import ToDoHeader from "../ToDoManager/components/ToDoHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -80,7 +80,7 @@ const ListPreviewer = () => {
           listData={
             typeof allListsAvailable == "string"
               ? JSON.parse(allListsAvailable)
-              : allListsAvailable
+              : { allListsAvailable }
           }
           router={router}
           enableSearch={enableSearch}
@@ -100,7 +100,7 @@ const ListPreviewer = () => {
           isOptionsOn={false}
         />
         <View style={styles.bodyList}>
-          <ScrollView style={styles.bodyScrollViewStyles}>
+          <ScrollView horizontal={false} style={styles.bodyScrollViewStyles}>
             <FlatList
               data={allListsAvailable}
               keyExtractor={(item) => item.uid}
