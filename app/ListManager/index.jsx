@@ -154,15 +154,6 @@ const TodoList = () => {
     initializeFavouriteList();
   }, []);
 
-  // const showFavouriteList = async () => {
-  //   try {
-  //     const userFavouriteList = await AsyncStorage.getItem("favouriteList");
-  //     // console.log(userFavouriteList);
-  //   } catch (err) {
-  //     console.log("err", err);
-  //   }
-  // };
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0047cc" }}>
       <Header />

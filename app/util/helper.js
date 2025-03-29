@@ -31,7 +31,7 @@ export const setToLocalStorage = async (list, listMetaData) => {
     parsedAllData[indexOfSelectedList] = selectedData;
 
     await AsyncStorage.setItem("todos", JSON.stringify(parsedAllData));
-    console.log("Saved to local storage");
+    console.log("Saved to local storage bdghdhydghchj");
   } catch (err) {
     console.error("Error saving to local storage:", err);
   }

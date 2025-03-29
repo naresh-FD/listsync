@@ -307,15 +307,15 @@ const ToDoManager = () => {
         <View style={styles.body}>
           <ToDoHeader
             listData={
-            typeof listData == "string" ? JSON.parse(listData) : listData
-          }
+              typeof listData == "string" ? JSON.parse(listData) : listData
+            }
             router={router}
             isSelectionOn={isSelectionOn}
             enableSearch={enableSearch}
             deleteAllItems={deleteAllItems}
             addToFavouriteList={addToFavouriteList}
-          selectedItems={selectedItems}
-          enableEditMode={enableEditMode}
+            selectedItems={selectedItems}
+            enableEditMode={enableEditMode}
             cancelSelection={cancelSelection}
             selectAllItems={selectAllItems}
             unSelectAllItems={unSelectAllItems}
@@ -333,6 +333,7 @@ const ToDoManager = () => {
                 listData={listData}
                 setListData={setListData}
                 setToLocalStorage={setToLocalStorage}
+                onClose={() => setIsAddFieldOpen(false)}
               />
             ) : null}
             <ScrollView style={styles.bodyScrollViewStyles}>

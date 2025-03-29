@@ -2,15 +2,14 @@ import React, { useState } from "react";
 import {
   View,
   TextInput,
-  Button,
-  StyleSheet,
   Text,
   Pressable,
+  StyleSheet,
+  TouchableOpacity,
   ToastAndroid,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { Divider } from "react-native-paper";
 import { createNotes } from "../firebase/controller/notesController";
 import { getDefaultItems } from "../util/helper";
 import { updateUser } from "../firebase/controller/userController";
@@ -40,11 +39,9 @@ const AddTodo = () => {
           collaborators: [email],
         };
 
-        //Create the Notes in Cloud
         let createNotesResp = await createNotes(newTodo);
 
         if (createNotesResp?.message === "Success") {
-          //update the notes Id to user in Cloud
           typeof userObject.notes === "string"
             ? (userObject.notes = JSON.parse(userObject.notes))
             : (userObject.notes = userObject.notes);
@@ -54,6 +51,7 @@ const AddTodo = () => {
             uid: uid,
             notes: JSON.stringify(userObject.notes),
           });
+
           if (updateNoteIdToUserResp?.message === "success") {
             if (todos.length !== 0) {
               todos.push(newTodo);
@@ -61,10 +59,9 @@ const AddTodo = () => {
               todos = [newTodo];
             }
 
-            // const updatedTodos = [...todos, newTodo];
             await AsyncStorage.setItem("todos", JSON.stringify(todos));
             await AsyncStorage.setItem("user", JSON.stringify(userObject));
-            router.back(); // Go back to the list after saving
+            router.back();
           } else {
             ToastAndroid.show(
               "Error Adding Notes to User Profile, Try Again after sometime..",
@@ -85,15 +82,23 @@ const AddTodo = () => {
   };
 
   const cancelTodo = () => {
-    router.back(); // Go back to the list after saving
+    router.back();
   };
 
-  const Separator = () => <View style={styles.separator} />;
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.bodyTitle}>Create List</Text>
-      <View style={styles.body}>
+    <View style={styles.overlay}>
+      <TouchableOpacity
+        style={styles.backdrop}
+        activeOpacity={1}
+        onPress={cancelTodo}
+      />
+      <View style={styles.modal}>
+        <TouchableOpacity style={styles.closeButton} onPress={cancelTodo}>
+          <Text style={styles.closeText}>×</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.bodyTitle}>Create List</Text>
+
         <TextInput
           placeholder="Enter List Title"
           value={title}
@@ -121,11 +126,40 @@ const AddTodo = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    height: "100%",
+    width: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0)",
+    justifyContent: "flex-end",
+  },
+  backdrop: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    height: "100%",
+    width: "100%",
+  },
+  modal: {
+    height: "80%",
+    backgroundColor: "white",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     padding: 20,
-    marginTop: 10,
-    backgroundColor: "#F5F5F5",
+    paddingTop: 50,
+    elevation: 10,
+  },
+  closeButton: {
+    position: "absolute",
+    top: 15,
+    right: 15,
+    zIndex: 10,
+  },
+  closeText: {
+    fontSize: 24,
+    color: "#999",
   },
   input: {
     height: 40,
@@ -143,35 +177,20 @@ const styles = StyleSheet.create({
     padding: 10,
     fontFamily: "Rubik",
   },
-  separator: {
-    marginVertical: 8,
-    borderBottomColor: "#737373",
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  body: {
-    width: "100%",
-    marginTop: 10,
-  },
   bodyTitle: {
-    fontSize: 35,
-    marginLeft: 5,
+    fontSize: 20,
     fontWeight: "bold",
-    marginTop: 15,
-    paddingTop: 5,
-    height: 50,
+    textAlign: "center",
+    marginBottom: 20,
   },
   actionButtonContainer: {
-    display: "flex",
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "center",
   },
   actionButton: {
-    paddingLeft: 35,
-    paddingRight: 35,
+    paddingHorizontal: 35,
     height: 40,
     borderRadius: 10,
-    display: "flex",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#007BFF",
