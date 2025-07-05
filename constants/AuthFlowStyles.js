@@ -1,39 +1,42 @@
 import { StyleSheet, Dimensions } from "react-native";
 import { Colors } from "./Colors";
+import { theme } from "../app/util/theme";
 
 const { width, height } = Dimensions.get("window");
 
 export const AuthFlowStyles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: Colors.light.buttonBackground,
+    width: "100%",
+    height: "100%",
+    display: "flex",
     justifyContent: "center",
     alignItems: "center",
   },
-  circle1: {
-    position: "absolute",
-    width: width * 0.75,
-    height: width * 0.75,
-    borderRadius: (width * 0.75) / 2,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    top: -height * 0.15,
-    right: -width * 0.25,
-  },
-  circle2: {
-    position: "absolute",
-    width: width * 0.5,
-    height: width * 0.5,
-    borderRadius: (width * 0.5) / 2,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    bottom: height * 0.1,
-    left: -width * 0.2,
-  },
   content: {
     flex: 1,
-    justifyContent: "flex-end",
-    alignItems: "flex-start",
-    marginBottom: "40%",
-    width: width * 0.9,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 80,
+  },
+  logoSection: {
+    width: "90%",
+    height: "70%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    textAlign: "center",
+  },
+  logoTitle: {
+    fontSize: 40,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: theme.white,
+  },
+  logoDescription: {
+    fontSize: 22,
+    fontWeight: "medium",
+    textAlign: "center",
+    color: theme.white,
   },
   title: {
     fontFamily: "Rubik",
@@ -49,6 +52,9 @@ export const AuthFlowStyles = StyleSheet.create({
     color: Colors.light.whiteText,
     width: "90%",
     marginBottom: 20,
+  },
+  loginActionContainer: {
+    width: 310,
   },
   signInButton: {
     width: "100%",

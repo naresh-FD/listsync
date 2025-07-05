@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -6,7 +6,8 @@ import {
   StyleSheet,
   ToastAndroid,
   Alert,
-  SafeAreaView,
+  ImageBackground,
+  Share,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -15,11 +16,37 @@ import Header from "./components/Header";
 import RenderTodoItem from "./components/RenderTodoItem";
 import AddButton from "./components/AddButton";
 import BottomNavigationBar from "../navigation/BottomNavigationBar";
-import { checkSourceListInFavouriteList } from "../util/helper";
- 
+import {
+  checkSourceListInFavouriteList,
+  getDefaultItems,
+} from "../util/helper";
+import { screenBgImage } from "../util/constants";
+import { theme } from "./../util/theme";
+import UpgradeToPremium from "../../components/UpgradeToPremiumCard";
+import CreateItemDrawerModal from "../../components/CreateItemDrawerModal";
+import { deleteNotes } from "../firebase/controller/notesController";
+
 const TodoList = () => {
-  const [todos, setTodos] = useState([]);
   const router = useRouter();
+  const [todos, setTodos] = useState([]);
+
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isCreateListDrawerOpen, setIsCreateListDrawerOpen] = useState(null);
+  const [listItemMode, setListItemMode] = useState("create");
+
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    const getTodos = async () => {
+      try {
+        let todos = await AsyncStorage.getItem("todos");
+        setTodos(JSON.parse(todos));
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getTodos();
+  }, [isCreateListDrawerOpen]);
 
   const loadTodos = async () => {
     const storedTodos = await AsyncStorage.getItem("todos");
@@ -33,41 +60,36 @@ const TodoList = () => {
     setTodos(newTodos);
   };
 
-  const handleDelete = async (uid) => {
+  const handleDelete = async (data) => {
     try {
-      if (await checkSourceListInFavouriteList(uid)) {
-        Alert.alert(
-          "Do you wish to delete this List?",
-          "Items in this list are added to your Favourite.",
-          [
-            {
-              text: "Delete",
-              onPress: async () => {
-                const filteredTodos = todos.filter((todo) => todo.uid !== uid);
-                saveTodos(filteredTodos);
-              },
-            },
-            {
-              text: "Cancel",
-              onPress: () => console.log("Cancel"),
-              style: "cancel",
-            },
-          ]
-        );
-      } else {
-        const filteredTodos = todos.filter((todo) => todo.uid !== uid);
-        saveTodos(filteredTodos);
-      }
+      Alert.alert(`Do you wish to delete this List ?`, "", [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel"),
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: async () => {
+            const { uid } = data;
+            let deleteResp = deleteNotes(uid);
+            if (deleteResp ?? deleteResp.message === "Success") {
+              ToastAndroid.show("Delete Success", ToastAndroid.SHORT);
+              const filteredTodos = todos.filter((todo) => todo !== data);
+              saveTodos(filteredTodos);
+            }
+          },
+        },
+      ]);
     } catch (err) {
       console.log(err);
     }
   };
 
-  const handleEdit = (uid) => {
-    router.push(`/ListManager/EditTodo?id=${uid}`);
-  };
-
   const handleAddToFavourite = async (listData) => {
+
+    console.log("Adding to Favourite List", listData);
+    
     try {
       //Fav List
       const userFavouriteList = await AsyncStorage.getItem("favouriteList");
@@ -76,7 +98,7 @@ const TodoList = () => {
 
       //List
       let selectedListData = JSON.parse(listData.data);
-      let selectedListId = listData.uid;
+      let selectedListId = listData.uid ?? listData.id;
 
       //Add Item to Fav List
       selectedListData.forEach((item) => {
@@ -124,90 +146,109 @@ const TodoList = () => {
     }, [])
   );
 
-  const initializeFavouriteList = async () => {
-    try {
-      const userFavouriteList = await AsyncStorage.getItem("favouriteList");
-      const user = await AsyncStorage.getItem("user");
-      if (userFavouriteList === null) {
-        let userObject = JSON.parse(user);
-        const newListPayload = {
-          uid: Date.now().toString(),
-          title: "Favourite List",
-          notes: "Personal Favourite List",
-          data: [],
-          source: [],
-          admin: userObject.email,
-          collaborators: [userObject.email],
-        };
-        await AsyncStorage.setItem(
-          "favouriteList",
-          JSON.stringify(newListPayload)
-        );
-      }
-    } catch (err) {
-      console.log("initializeFavouriteList", err);
-    }
+  const handleCreateList = () => {
+    handleAddList();
+    setIsCreateListDrawerOpen(!isCreateListDrawerOpen);
   };
 
-  useEffect(() => {
-    //Create Favourite List
-    initializeFavouriteList();
-  }, []);
+  const handleAddList = () => {
+    setListItemMode("create");
+    setSelectedItem({ title: "", description: "", listData: todos });
+  };
 
-  // const showFavouriteList = async () => {
-  //   try {
-  //     const userFavouriteList = await AsyncStorage.getItem("favouriteList");
-  //     // console.log(userFavouriteList);
-  //   } catch (err) {
-  //     console.log("err", err);
-  //   }
-  // };
+  const handleEdit = (data) => {
+    setListItemMode("edit");
+    setIsCreateListDrawerOpen(!isCreateListDrawerOpen);
+    setSelectedItem({
+      title: data.title,
+      description: data.notes,
+      id: data.uid,
+    });
+  };
+
+  const renderList = useMemo(() => {
+    if (todos && todos.length !== 0) {
+      return (
+        <FlatList
+          data={todos?.filter((item) => item.title.includes(searchQuery))}
+          keyExtractor={(item) => item.uid}
+          renderItem={(item) => (
+            <RenderTodoItem
+              item={item}
+              onEdit={handleEdit}
+              onAddToFavourite={handleAddToFavourite}
+              onDelete={handleDelete}
+              onShare={handleShare}
+              onPress={goToListItems}
+            />
+          )}
+        />
+      );
+    } else {
+      return <Text style={styles.emptyListText}>No Items in the list.</Text>;
+    }
+  }, [todos, searchQuery]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#0047cc" }}>
-      <Header />
-      <View style={styles.container}>
-        {/* <Pressable onPress={showFavouriteList}>
-          <Text>View Favourite</Text>
-        </Pressable> */}
-
+    <ImageBackground style={styles.container} source={screenBgImage}>
+      <View style={styles.headerWrapper}>
+        <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      </View>
+      <View style={styles.bodyWrapper}>
+        <UpgradeToPremium />
         <View style={styles.body}>
-          {todos.length !== 0 ? (
-            <FlatList
-              data={todos}
-              keyExtractor={(item) => item.uid}
-              renderItem={(item) => (
-                <RenderTodoItem
-                  item={item}
-                  onEdit={handleEdit}
-                  onAddToFavourite={handleAddToFavourite}
-                  onDelete={handleDelete}
-                  onShare={handleShare}
-                  onPress={goToListItems}
-                />
-              )}
-            />
-          ) : (
-            <Text style={styles.emptyListText}>No Items in the list.</Text>
-          )}
-          <AddButton onPress={() => router.push("/ListManager/AddTodo")} />
+          <Text style={styles.bodyTitle}>All List</Text>
+          {renderList}
         </View>
       </View>
-      <BottomNavigationBar page="Home" />
-    </SafeAreaView>
+      <AddButton onPress={handleCreateList} type="list" />
+      <BottomNavigationBar page="Lists" type="main" />
+      {isCreateListDrawerOpen ? (
+        <CreateItemDrawerModal
+          setIsModalOpen={setIsCreateListDrawerOpen}
+          type="List"
+          mode={listItemMode}
+          setListData={setTodos}
+          fields={selectedItem}
+        />
+      ) : null}
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    fontFamily: "Rubik",
-    backgroundColor: "#F5F5F5",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 50,
+    display: "flex",
+    flexDirection: "column",
+  },
+  headerWrapper: {
+    flex: 0.2,
+  },
+  bodyWrapper: {
+    flex: 0.8,
+    width: "100%",
+    height: "100%",
+    backgroundColor: theme.white,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    display: "flex",
+    alignItems: "center",
   },
   body: {
-    flex: 1,
-    marginTop: -5,
+    width: "100%",
+    height: "70%",
+    padding: 25,
+    paddingTop: 0,
+  },
+  bodyTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: theme.black,
+    marginBottom: 20,
   },
   emptyListText: {
     textAlign: "center",

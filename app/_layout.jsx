@@ -20,6 +20,7 @@ export default function RootLayout() {
           <Stack.Screen name="auth/WelcomeScreen/index" />
           <Stack.Screen name="index" />
           <Stack.Screen name="auth/login/index" />
+          <Stack.Screen name="auth/SignUp/index" />
           <Stack.Screen
             name="ListManager/index"
             options={{ title: "List Manager", headerShown: false }}

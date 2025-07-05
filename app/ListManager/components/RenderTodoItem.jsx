@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { View, Text, StyleSheet } from "react-native";
 import { Card } from "react-native-paper";
 import ListMenu from "./ListMenu";
+import { theme } from "../../util/theme";
 
 const RenderTodoItem = ({
   item,
@@ -33,9 +34,12 @@ const RenderTodoItem = ({
 const styles = StyleSheet.create({
   card: {
     borderRadius: 10,
-    height: 60,
-    backgroundColor: "white",
-    margin: 2,
+    height: 50,
+    marginLeft: 2,
+    marginRight: 2,
+    backgroundColor: theme.white,
+    marginBottom: 10,
+    elevation: 4,
   },
   cardContent: {
     flexDirection: "row",

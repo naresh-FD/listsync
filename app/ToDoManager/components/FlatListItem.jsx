@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Text,
   View,
   TouchableOpacity,
   Pressable,
-  TextInput,
   Image,
+  ToastAndroid,
 } from "react-native";
-import { Checkbox } from "react-native-paper";
-import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import styles from "../styles/ToDoManagerStyles";
 import { setToLocalStorage } from "../../util/helper";
+import { updateNotesData } from "../../firebase/controller/notesController";
+
+import tickIcon from "../../../assets/icons/tickIcon.png";
+import editIcon from "../../../assets/icons/editIcon.png";
+import deleteIcon from "../../../assets/icons/deleteIcon.png";
+
 const FlatListItem = ({
   item,
   listData,
@@ -22,9 +26,13 @@ const FlatListItem = ({
   isSelectionOn,
   setIsSectionOn,
   isEditModeOn,
+  setSelectedItem,
+  setListItemMode,
+  addToFavouriteListItem,
+  setAddToFavouriteListItem,
   // setToLocalStorage,
 }) => {
-  const { uid, title, description, favourite, category, author } = item;
+  const { uid, title, description, favourite, category, author } = item.item;
   const [itemTitle, setItemTitle] = useState(title);
   const [itemDescription, setItemDescription] = useState(description);
   const [isFieldsEditable, setisFieldsEditable] = useState(false);
@@ -39,7 +47,18 @@ const FlatListItem = ({
   const [editMode, setEditMode] = useState(false);
 
   useEffect(() => {
-    setEditMode(isEditModeOn);
+    setItemTitle(title);
+    setItemDescription(description);
+    setIsItemFavourite(favourite);
+  }, [item]);
+
+  useEffect(() => {
+    const handleEditMode = () => {
+      if (isEditModeOn !== undefined) {
+        setEditMode(isEditModeOn);
+      }
+    };
+    handleEditMode();
   }, [isEditModeOn]);
 
   const addAllItemsToList = () => {
@@ -51,65 +70,7 @@ const FlatListItem = ({
     addAllItemsToList();
   }, []);
 
-  const editSaveToggle = () => {
-    setisFieldsEditable(!isFieldsEditable);
-  };
-
-  // const saveItem = (uid) => {
-  //   try {
-  //     let existingitems = listData;
-  //     if (existingitems) {
-  //       let listItems =
-  //         typeof existingitems.data === "string"
-  //           ? JSON.parse(existingitems.data)
-  //           : existingitems.data;
-
-  //       let thisItem = listItems.find((items) => items.uid === uid);
-  //       thisItem.title = itemTitle;
-  //       thisItem.description = itemDescription;
-  //       thisItem.category = itemCategory;
-
-  //       const index = listItems.findIndex((listItem) => listItem === thisItem);
-  //       listItems[index] = thisItem;
-
-  //       listItems = JSON.stringify(listItems);
-
-  //       setToLocalStorage(listItems, existingitems);
-  //       editSaveToggle();
-  //     }
-  //   } catch (err) {
-  //     console.log("Save Item Error -", err);
-  //   }
-  // };
-
-  const saveItem = (uid) => {
-    try {
-      let existingitems = listData;
-      if (existingitems) {
-        let listItems =
-          typeof existingitems.data === "string"
-            ? JSON.parse(existingitems.data)
-            : existingitems.data;
-
-        let thisItem = listItems.find((items) => items.uid === uid);
-        thisItem.title = itemTitle;
-        thisItem.description = itemDescription;
-        thisItem.category = itemCategory;
-
-        const index = listItems.findIndex((listItem) => listItem === thisItem);
-        listItems[index] = thisItem;
-
-        listItems = JSON.stringify(listItems);
-
-        setToLocalStorage(listItems, existingitems);
-        editSaveToggle();
-      }
-    } catch (err) {
-      console.error("Save Item Error -", err);
-    }
-  };
-
-  const deleteItem = (uid) => {
+  const deleteItem = async (itemUid) => {
     try {
       let existingItems = listData;
       if (existingItems) {
@@ -121,15 +82,27 @@ const FlatListItem = ({
         if (listItems.length === 1) {
           setListData((prev) => ({ ...prev, data: [] }));
         } else {
-          let thisItem = listItems.find((items) => items.uid === uid);
-          const index = listItems.findIndex(
-            (listItem) => listItem === thisItem
-          );
-          listItems.splice(index, 1);
-          setListData((prev) => ({ ...prev, data: listItems }));
+          const updatedItems = listItems.filter((item) => item.uid !== itemUid);
+          listItems = updatedItems;
+          setListData((prev) => ({ ...prev, data: updatedItems }));
         }
         listItems = JSON.stringify(listItems);
-        setToLocalStorage(listItems, listData);
+
+        listData.data = listItems;
+
+        let updateToCloudResp = await updateNotesData({
+          uid: listData.uid ?? listData.id,
+          data: listData.data,
+        });
+        if (updateToCloudResp && updateToCloudResp.message === "Success") {
+          ToastAndroid.show("Item Deleted", ToastAndroid.SHORT);
+          setToLocalStorage(listItems, listData);
+        } else {
+          ToastAndroid.show(
+            "Failed to Save to Cloud - Check Internet connection",
+            ToastAndroid.SHORT
+          );
+        }
       }
     } catch (err) {
       console.log("Delete Item Error -", err);
@@ -138,7 +111,6 @@ const FlatListItem = ({
 
   const setFavouriteItem = (uid) => {
     setIsItemFavourite(!isItemFavourite);
-
     let allItems = listData;
     let existingitems =
       typeof allItems.data === "string"
@@ -151,8 +123,23 @@ const FlatListItem = ({
     const index = existingitems.findIndex((listItem) => listItem === thisItem);
     existingitems[index] = thisItem;
 
+    addItemToSelection(thisItem);
+
     existingitems = JSON.stringify(existingitems);
     setToLocalStorage(existingitems, allItems);
+  };
+
+  const addItemToSelection = (thisItem) => {
+    let currentItem = addToFavouriteListItem.find((item) => item.uid === uid);
+    if (currentItem !== undefined) {
+      let filteredItems = addToFavouriteListItem.filter(
+        (item) => item.uid !== uid
+      );
+      setAddToFavouriteListItem(filteredItems);
+    } else {
+      addToFavouriteListItem.push(thisItem);
+      setAddToFavouriteListItem(addToFavouriteListItem);
+    }
   };
 
   const onLongPress = () => {
@@ -177,6 +164,25 @@ const FlatListItem = ({
     setChecked(!checked);
   };
 
+  const handleEditButton = () => {
+    const selectedItem = {
+      uid: uid,
+      title: itemTitle,
+      description: itemDescription,
+      favourite: isItemFavourite,
+      author: itemAuthor,
+      category: itemCategory,
+      listData: listData,
+    };
+    setSelectedItem(selectedItem);
+    setListItemMode("edit");
+  };
+
+  const editSaveToggle = () => {
+    // setisFieldsEditable(!isFieldsEditable);
+    handleEditButton();
+  };
+
   useEffect(() => {
     if (!setToLocalStorage) {
       console.error("setToLocalStorage is undefined in FlatListItem");
@@ -184,7 +190,7 @@ const FlatListItem = ({
   }, [setToLocalStorage]);
 
   return (
-    <Pressable onLongPress={onLongPress} onPress={() => setFavouriteItem(uid)}>
+    <Pressable onPress={() => setFavouriteItem(uid)}>
       <View
         style={[
           styles.listItemWrapper,
@@ -192,62 +198,38 @@ const FlatListItem = ({
             ? styles.listItemEditable
             : styles.listItemUnEditable,
           isFieldsEditable ? styles.onEditlistItem : "",
-          {
-            borderWidth: 1,
-            borderColor: "#cccccc",
-            margin: 2,
-            minHeight: 50,
-            padding: 5,
-          },
+          isItemFavourite && !editMode
+            ? styles.listItemSelected
+            : styles.listItemUnSelected,
         ]}
       >
-        {isSelectionOn ? (
-          <View style={styles.selectionSection}>
-            <Checkbox
-              color="#007BFF"
-              status={checked ? "checked" : "unchecked"}
-              onPress={() => selectItem(item)}
-            />
-          </View>
-        ) : null}
         <View style={styles.textSection}>
-          <TextInput
-            style={styles.listItemTitle}
-            placeholder="title"
-            editable={isFieldsEditable}
-            value={itemTitle}
-            onChangeText={setItemTitle}
-          />
-          {editMode || itemDescription?.length !== 0 ? (
-            <TextInput
-              style={styles.listItemDescription}
-              editable={isFieldsEditable}
-              placeholder="description..."
-              value={itemDescription}
-              onChangeText={setItemDescription}
-            />
-          ) : null}
-          {/* {itemAuthor?.length !== 0 && (
-            <Text style={styles.authorTitle}>
-              Author - {itemAuthor.length === 0 ? "unknown" : itemAuthor}
-            </Text>
-          )} */}
-          {isFieldsEditable && (
-            <View style={styles.categoryContainer}>
-              <Image
-                style={styles.labelIcon}
-                source={require("../../../assets/images/tag.png")}
-              />
-              <TextInput
-                style={styles.listCategoryTitle}
-                editable={isFieldsEditable}
-                placeholder={itemCategory}
-                value={itemCategory}
-                onChangeText={setItemCategory}
-              />
-            </View>
-          )}
+          {/**---Title---*/}
+          <Text
+            style={[
+              styles.listItemTitle,
+              isItemFavourite && !editMode
+                ? styles.listItemTitleSelected
+                : styles.listItemTitleUnSelected,
+            ]}
+          >
+            {itemTitle}
+          </Text>
+
+          {/**---Description---*/}
+          <Text
+            style={[
+              styles.listItemDescription,
+              isItemFavourite && !editMode
+                ? styles.listItemDescriptionSelected
+                : styles.listItemDescriptionUnSelected,
+            ]}
+          >
+            {itemDescription}
+          </Text>
         </View>
+
+        {/**---Action Item--- */}
         <View
           style={[styles.actionsSection, isSelectionOn && styles.nonSelectable]}
         >
@@ -257,32 +239,26 @@ const FlatListItem = ({
               style={styles.editIconWrapper}
             >
               {isItemFavourite && (
-                <Entypo name="check" size={24} color="#03a071" />
+                <Image source={tickIcon} style={styles.tickIcon} />
               )}
             </TouchableOpacity>
           ) : null}
           {editMode && (
             <View style={styles.editDeleteActionContainer}>
-              {!isFieldsEditable ? (
-                <TouchableOpacity
-                  onPress={editSaveToggle}
-                  style={styles.editIconWrapper}
-                >
-                  <MaterialIcons name="edit" size={24} color="#202020" />
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  onPress={() => saveItem(uid)}
-                  style={styles.editIconWrapper}
-                >
-                  <Ionicons name="checkmark" size={24} color="green" />
-                </TouchableOpacity>
-              )}
+              {/**Edit Button */}
+              <TouchableOpacity
+                onPress={editSaveToggle}
+                style={styles.editIconWrapper}
+              >
+                <Image source={editIcon} style={styles.actionIcon} />
+              </TouchableOpacity>
+
+              {/**Delete Button */}
               <TouchableOpacity
                 onPress={() => deleteItem(uid)}
                 style={styles.editIconWrapper}
               >
-                <MaterialIcons name="delete" size={24} color="#ff2525" />
+                <Image source={deleteIcon} style={styles.actionIcon} />
               </TouchableOpacity>
             </View>
           )}

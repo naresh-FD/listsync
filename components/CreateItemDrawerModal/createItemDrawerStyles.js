@@ -1,0 +1,122 @@
+import { StyleSheet, Dimensions } from "react-native";
+import { theme } from "../../app/util/theme";
+
+export const CreateItemDrawerStyles = StyleSheet.create({
+  drawerWrapper: {
+    paddingTop: 50,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
+    backgroundColor: "#00000050",
+    width: "100%",
+    height: "100%",
+  },
+  drawerContainer: {
+    position: "absolute",
+    bottom: -10,
+    // height: 350,
+    paddingTop: 20,
+    width: "100%",
+    backgroundColor: "white",
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerSection: {
+    width: "100%",
+    flex: 0.2,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingLeft: 50,
+    paddingRight: 50,
+    marginBottom: 20,
+  },
+  titleSection: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  starIcon: {
+    width: 30,
+    height: 30,
+  },
+  headerSectionTitle: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginRight: 20,
+  },
+  closeButton: {
+    width: 20,
+    height: 20,
+  },
+  drawerImageSectionImage: {
+    height: 150,
+    width: 150,
+  },
+  bodySection: {
+    flex: 0.6,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "80%",
+  },
+  collaboratorSection: {
+    width: "100%",
+    marginBottom: 30,
+  },
+  collaboratorTitle: {
+    fontSize: 14,
+    fontFamily: "Poppins",
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  collaborator: {
+    height: 30,
+    display: "flex",
+    flexDirection: "column",
+    alignSelf: "flex-start",
+    justifyContent: "center",
+    padding: 10,
+  },
+  collaboratorImage: {
+    width: 26,
+    height: 26,
+    marginRight: 10,
+  },
+  leftSection: {
+    flex: 0.8,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  rightSection: {
+    flex: 0.2,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  drawerText: {
+    textAlign: "center",
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  text: {
+    color: "black",
+  },
+  footerSection: {
+    flex: 0.2,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "80%",
+  },
+});

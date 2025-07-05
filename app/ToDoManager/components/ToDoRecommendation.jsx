@@ -11,63 +11,49 @@ import {
   ScrollView,
 } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { recommendedItems } from "../../util/constants";
+import { recommendedItems, addItemIcon } from "../../util/constants";
 import { useRouter } from "expo-router";
 import { Colors } from "../../../constants/Colors";
+import { theme } from "../../util/theme";
+import { useMemo } from "react";
 
-const ToDoRecommendation = () => {
-  return (
-    <View style={styles.recommendationContainer}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Recommendation</Text>
-      </View>
+const ToDoRecommendation = ({ query, onAdd }) => {
+  const renderRecommendations = useMemo(() => {
+    let filteredItems = recommendedItems.filter((item) =>
+      item.toLowerCase().includes(query.toLowerCase())
+    );
+    return (
       <View style={styles.body}>
-        {recommendedItems.map((item, index) => {
-          return <RecommendationCard key={index} index={index} item={item} />;
+        {filteredItems.map((item, index) => {
+          return <RecommendationCard index={index} item={item} onAdd={onAdd} />;
         })}
       </View>
-    </View>
+    );
+  }, [query]);
+  return (
+    <View style={styles.recommendationContainer}>{renderRecommendations}</View>
   );
 };
 
-const RecommendationCard = ({ item, index }) => {
-  const router = useRouter();
-  const getCardIndex = (index) => {
-    if (index === 0) {
-      return styles.firstCardIndex;
-    } else if (index === recommendedItems.length - 1) {
-      return styles.lastCardindex;
-    } else {
-      return "";
-    }
-  };
-  const openCategory = () => {
-    router.push(
-      `/ToDoManager/components/RecommendationSelector?item=${JSON.stringify(
-        item
-      )}`
-    );
-  };
+const RecommendationCard = ({ item, index, onAdd }) => {
   return (
     <Pressable
-      onPress={openCategory}
-      style={[styles.cardContainer, getCardIndex(index)]}
+      key={index}
+      onPress={() => onAdd(item)}
+      style={[styles.cardContainer]}
     >
-      <Text style={styles.cardTitle}>{item.title}</Text>
-      <AntDesign name="caretright" size={14} color="white" />
+      <Text style={styles.cardTitle}>{item}</Text>
+      <Image source={addItemIcon} style={styles.cardIcon} />
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   recommendationContainer: {
-    marginLeft: 10,
-    marginRight: 10,
-    padding: 10,
+    width: "100%",
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-start",
-    marginTop: 30,
   },
   header: {
     width: "100%",
@@ -77,16 +63,28 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   body: {
-    width: "100%",
+    width: "99%",
     paddingTop: 10,
+    marginBottom: 100,
   },
   cardTitle: {
-    color: "white",
+    color: theme.black,
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  cardIcon: {
+    width: 40,
+    height: 40,
   },
   cardContainer: {
-    padding: 15,
+    width: "100%",
+    marginHorizontal: 0,
+    marginVertical: 2,
+    padding: 10,
+    borderRadius: 10,
     borderBottomColor: "grey",
-    backgroundColor: Colors.light.buttonBackground,
+    backgroundColor: theme.white,
+    elevation: 5,
     display: "flex",
     flexDirection: "row",
     alignItems: "center",

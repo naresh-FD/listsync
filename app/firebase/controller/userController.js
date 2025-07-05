@@ -1,6 +1,7 @@
-import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
-import { auth, db } from "../firebaseConfig";
+import { setDoc, doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
 import { validateCreateProfilePayload } from "../../util/helper";
+import { ToastAndroid } from "react-native";
 
 export const createProfile = async (type, userDetails) => {
   try {
@@ -25,6 +26,8 @@ export const getUser = async (uid) => {
       return "No User Found";
     }
   } catch (err) {
+    if (err.includes("client is offline"))
+      ToastAndroid.show("No Internet Connection", ToastAndroid.LONG);
     console.log("Get User Error - ", err);
   }
 };
@@ -39,6 +42,18 @@ export const updateUser = async (newPayload) => {
     return { message: "success" };
   } catch (err) {
     console.log("Update User Error - ", err);
+    return { message: "error" };
+  }
+};
+
+// deleteUser
+export const deleteUser = async (uid) => {
+  try {
+    const userRef = doc(db, "users", uid);
+    await updateDoc(userRef, { isActive: false });
+    return { message: "success" };
+  } catch (err) {
+    console.log("Delete User Error - ", err);
     return { message: "error" };
   }
 };

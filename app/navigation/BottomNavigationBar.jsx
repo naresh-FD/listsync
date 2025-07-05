@@ -1,30 +1,31 @@
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, Image } from "react-native";
 import PropTypes from "prop-types";
 import { useRouter } from "expo-router";
-import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { theme } from "../util/theme";
+import { getNavbarIconImage } from "../util/helper";
 
-const BottomNavigationBar = ({ page }) => {
+const BottomNavigationBar = ({ page, type }) => {
   const router = useRouter();
   const config = [
     {
       name: "Home",
-      icon: "home",
+      route: "ToDoManager",
+    },
+    {
+      name: "Lists",
       route: "ListManager",
     },
     {
-      name: "BillsScreen",
-      icon: "document-scanner",
+      name: "Bills",
       route: "BillsScreen",
     },
     {
       name: "Favourite",
-      icon: "favorite",
-      route: "ListManager",
+      route: "ToDoManager",
     },
     {
       name: "Settings",
-      icon: "settings",
       route: "Settings",
     },
   ];
@@ -32,11 +33,19 @@ const BottomNavigationBar = ({ page }) => {
   const routeHandler = async (item) => {
     try {
       const { route, name } = item;
+
       if (name === "Favourite") {
+        // Fetch the favourite list from AsyncStorage
         const userFavouriteList = await AsyncStorage.getItem("favouriteList");
-        const stringData = JSON.stringify(userFavouriteList);
-        console.log("32", stringData);
+        const stringData = JSON.stringify(userFavouriteList) ?? "[]";
         router.push(`/ToDoManager?item=${stringData}`);
+      } else if (name === "Home") {
+        const allList = await AsyncStorage.getItem("todos");
+        const defaultList = JSON.parse(allList).find((item) =>
+          item.uid.includes("defaultList")
+        );
+        const userDefaultListString = JSON.stringify(defaultList);
+        router.push(`/ToDoManager?item=${userDefaultListString}`);
       } else {
         if (page !== name) {
           router.replace(route);
@@ -47,30 +56,37 @@ const BottomNavigationBar = ({ page }) => {
     }
   };
   return (
-    <View style={styles.navigationContainer}>
+    <View
+      style={[
+        styles.navigationContainer,
+        type === "sub" ? styles.containerBorderRadius : "",
+      ]}
+    >
       {config.map((route, index) => {
         const isSelected = page === route.name;
         return (
-          <Pressable
-            key={route.name}
-            style={styles.navigationItem}
-            onPress={() => routeHandler(route)}
-          >
-            <MaterialIcons
-              name={route.icon}
-              size={30}
-              color={isSelected ? "blue" : "black"}
-              style={styles.navigationItemIcon}
-            />
-            <Text
-              style={[
-                styles.navigationItemText,
-                isSelected && { color: "blue" },
-              ]}
+          <View style={styles.navigationItemWrapper} key={route.name}>
+            <Pressable
+              style={styles.navigationItem}
+              onPress={() => routeHandler(route)}
             >
-              {route.name}
-            </Text>
-          </Pressable>
+              <Image
+                style={styles.navigationItemIcon}
+                source={getNavbarIconImage(
+                  route.name,
+                  isSelected ? "filled" : "unfilled"
+                )}
+              />
+              <Text
+                style={[
+                  styles.navigationItemText,
+                  isSelected && { color: theme.tertirary },
+                ]}
+              >
+                {route.name}
+              </Text>
+            </Pressable>
+          </View>
         );
       })}
     </View>
@@ -78,11 +94,10 @@ const BottomNavigationBar = ({ page }) => {
 };
 const styles = StyleSheet.create({
   navigationContainer: {
-    height: 60,
+    height: 70,
     width: "100%",
     backgroundColor: "white",
     elevation: 5,
-    borderRadius: 10,
     position: "absolute",
     bottom: 0,
     display: "flex",
@@ -90,15 +105,27 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     flexDirection: "row",
     paddingLeft: 10,
+    borderTopColor: theme.black,
+    borderTopWidth: 0.2,
     paddingRight: 10,
-    paddingTop: 5, // Added top padding
-    shadowColor: "#000", // Added shadow properties
+    paddingTop: 5,
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: -2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+  },
+  containerBorderRadius: {
+    borderRadius: 10,
+  },
+  navigationItemWrapper: {
+    width: 70,
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   navigationItem: {
     height: 40,
@@ -108,13 +135,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   navigationItemIcon: {
-    height: 30,
-    width: 30,
+    height: 25,
+    width: 25,
   },
   navigationItemText: {
-    fontSize: 12,
+    fontSize: 14,
     textAlign: "center",
+    fontWeight: "regular",
+    marginTop: 5,
+    fontWeight: 500,
+    color: theme.unFilledItems,
   },
+  navigationItemFilledText: {
+    color: theme.accent,
+  },
+  navigationItemUnfilledText: {},
 });
 
 BottomNavigationBar.propTypes = {

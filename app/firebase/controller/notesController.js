@@ -4,7 +4,7 @@ import { auth, db } from "../firebaseConfig";
 export const getAllNotesOfUser = async (notesWithIdList) => {
   try {
     let notesDataList = [];
-    if (notesWithIdList && notesWithIdList.length !== 0) {
+    if (notesWithIdList && notesWithIdList?.length !== 0) {
       notesWithIdList.forEach(async (note) => {
         if (note) {
           let noteData = await getNotes(note);
@@ -57,7 +57,6 @@ export const createNotes = async (note) => {
       });
       return { message: "Success" };
     } else {
-      console.log("Invalid Note Id - ", err);
       return { message: "Error", payload: note };
     }
   } catch (err) {

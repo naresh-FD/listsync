@@ -1,27 +1,26 @@
-import { Link, useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  TextInput,
-  Button,
   StyleSheet,
-  TouchableOpacity,
-  StatusBar,
   Dimensions,
   ToastAndroid,
+  ImageBackground,
+  TouchableOpacity,
+  Pressable,
 } from "react-native";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "../../../constants/Colors";
-import {
-  getAllNotesOfUser,
-  getNotes,
-} from "../../firebase/controller/notesController";
-import {
-  createProfile,
-  getUser,
-} from "../../firebase/controller/userController";
+import { getAllNotesOfUser } from "../../firebase/controller/notesController";
+import { getUser } from "../../firebase/controller/userController";
+
+import loginBackground from "../../../assets/images/loginBg.png";
+import { theme } from "../../util/theme";
+import InputField from "../../../reusables/InputField";
+
+import Button from "../../../reusables/Button/Button";
+import { Ionicons } from "@expo/vector-icons";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -78,7 +77,7 @@ const LoginScreen = () => {
             let userNotes = await getAllNotesOfUser(
               JSON.parse(currentUser.notes)
             );
-            if (userNotes && userNotes.length !== 0) {
+            if (userNotes && userNotes?.length !== 0) {
               await AsyncStorage.setItem("todos", JSON.stringify(userNotes));
             } else {
               await AsyncStorage.setItem("todos", JSON.stringify([]));
@@ -115,73 +114,65 @@ const LoginScreen = () => {
     // checkIsUserAvailable();
   }, []);
 
+  const goToRoute = (route) => {
+    router.push(route);
+  };
+
   return (
-    <View style={styles.container}>
-      <StatusBar backgroundColor="#0047cc" barStyle="light-content" />
-      <View style={styles.circle1} />
-      <View style={styles.circle2} />
-
-      <View style={styles.content}>
-        <Text style={styles.title}>Login</Text>
-        <Text style={styles.subtitle}>
-          Manage your expenses seamlessly & intuitively
-        </Text>
-
-        <TextInput
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          style={styles.inputField}
-          placeholderTextColor="black"
-        />
-
-        <TextInput
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          style={styles.inputField}
-          placeholderTextColor="black"
-        />
-
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.createAccountButtonText}>LOGIN</Text>
-        </TouchableOpacity>
-
-        {/* Bottom Link */}
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.bottomLink}
-        >
-          <Text style={styles.bottomLinkText}>
-            Sign in with Social Account ?
-          </Text>
-          <Text style={styles.signInLink}>Google Sign in</Text>
+    <ImageBackground
+      source={loginBackground}
+      resizeMode="cover"
+      style={styles.container}
+    >
+      <View style={styles.routerContainer}>
+        <TouchableOpacity onPress={() => goToRoute("/auth/WelcomeScreen")}>
+          {/* <Image
+            source={require("../../../assets/icons/backLight.png")}
+            style={styles.backButton}
+          /> */}
+          <Ionicons name="arrow-back" size={34} color="white" />
         </TouchableOpacity>
       </View>
+      <View style={styles.content}>
+        <Text style={styles.title}>Welcome Back</Text>
+        <Text style={styles.subtitle}>Hello there, sign in to continue!</Text>
 
-      {/* <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => router.replace("auth/WelcomeScreen")}
-      >
-        <Text style={styles.backButtonText}>{"< Back"}</Text>
-      </TouchableOpacity>
-      <Text style={styles.title}>Login</Text>
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
-      />
-      <Button title="Login" onPress={handleLogin} /> */}
-    </View>
+        <View style={styles.fieldsContainer}>
+          <InputField
+            type="text"
+            label="Email"
+            placeholder="jondeo@gmail.com"
+            value={email}
+            onchange={setEmail}
+          />
+
+          <InputField
+            type="password"
+            label="Password"
+            placeholder="********"
+            value={password}
+            onchange={setPassword}
+          />
+
+          <Pressable
+            onPress={router.push("/auth/forgotPassword")}
+            style={styles.forgotpasswordContainer}
+          >
+            <Text style={styles.forgotpassword}>Forgot Password?</Text>
+          </Pressable>
+
+          <Button
+            label="Don’t have an account? Sign up"
+            textTheme="light"
+            onPress={() => goToRoute("/auth/SignUp")}
+            theme={null}
+          />
+          <View style={styles.signInButtonContainer}>
+            <Button label="Sign in" onPress={handleLogin} theme="dark" />
+          </View>
+        </View>
+      </View>
+    </ImageBackground>
   );
 };
 
@@ -190,49 +181,53 @@ const { width, height } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.buttonBackground,
     justifyContent: "center",
     alignItems: "center",
-  },
-  circle1: {
-    position: "absolute",
-    width: width * 0.75,
-    height: width * 0.75,
-    borderRadius: (width * 0.75) / 2,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    top: -height * 0.15,
-    right: -width * 0.25,
-  },
-  circle2: {
-    position: "absolute",
-    width: width * 0.5,
-    height: width * 0.5,
-    borderRadius: (width * 0.5) / 2,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    bottom: height * 0.1,
-    left: -width * 0.2,
+    paddingTop: 50,
+    display: "flex",
+    flexDirection: "column",
   },
   content: {
+    width: "90%",
+    height: "100%",
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "flex-start",
-    marginBottom: "40%",
-    width: width * 0.9,
+    marginBottom: 50,
+    paddingLeft: 20,
+    marginTop: 20,
   },
   title: {
-    fontFamily: "Rubik",
-    fontSize: 36,
+    fontFamily: "Poppins",
+    fontSize: 28,
     fontWeight: "bold",
-    color: Colors.light.buttonText,
-    marginBottom: 10,
+    color: theme.black,
     textAlign: "center",
   },
   subtitle: {
-    fontSize: 16,
-    fontFamily: "Rubik",
-    color: Colors.light.whiteText,
+    fontSize: 14,
+    fontFamily: "Poppins",
+    color: theme.black,
     width: "90%",
     marginBottom: 20,
+  },
+  fieldsContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  forgotpasswordContainer: {
+    width: 310,
+    height: 40,
+    display: "flex",
+    alignItems: "flex-end",
+    justifyContent: "center",
+  },
+  forgotpassword: {
+    textAlign: "right",
+  },
+  signInButtonContainer: {
+    width: 340,
   },
   signInButton: {
     width: "100%",
@@ -326,6 +321,15 @@ const styles = StyleSheet.create({
   backButtonText: {
     fontSize: 16,
     color: "#007BFF",
+  },
+  routerContainer: {
+    marginTop: 15,
+    width: "85%",
+  },
+  backButton: {
+    height: 25,
+    width: 30,
+    color: "white",
   },
 });
 

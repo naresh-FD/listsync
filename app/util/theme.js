@@ -1,0 +1,16 @@
+export const theme = {
+  primary: "#BAE100",
+  secondary: "#B1D401",
+  tertirary: "#7DBE02",
+  primaryDark: "#3B5900",
+  danger: "#FF727F",
+  white: "#ffffff",
+  black: "#000000",
+  fontFamily: "Poppins",
+  fieldBg: "#F2FACC",
+  smokeWhite: "#EFF3F6",
+  unFilledItems: "#888888",
+  fieldPlaceholder: "#A9B4C3",
+  disabled: "#E9E6E7",
+  offerStatus: "#ed9b4f",
+};

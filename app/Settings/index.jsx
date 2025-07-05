@@ -1,46 +1,38 @@
-import React from "react";
-import { View, Text, Switch, StyleSheet, Pressable } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  Switch,
+  Image,
+  Pressable,
+  ImageBackground,
+  Linking,
+} from "react-native";
 import BottomNavigationBar from "../navigation/BottomNavigationBar";
 import { Title } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import Loading from "../../components/loading";
+import Button from "../../reusables/Button/Button";
+
+import { settingsStyles as styles } from "./settingsStyles";
+import { settingsLinks } from "../util/constants";
 
 const SettingsScreen = () => {
   const router = useRouter();
-  const [notificationsEnabled, setNotificationsEnabled] = React.useState(false);
-  const [darkModeEnabled, setDarkModeEnabled] = React.useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [darkModeEnabled, setDarkModeEnabled] = useState(false);
 
-  const handleNotificationsToggle = () => {
-    setNotificationsEnabled(!notificationsEnabled);
-  };
+  const [settingsLink, setSettingsLink] = useState(settingsLinks);
 
-  const handleDarkModeToggle = () => {
-    setDarkModeEnabled(!darkModeEnabled);
-  };
-  // useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     tabBarIcon: ({ color, size }) => (
-  //       <ListIcon name="list" color={color} size={size} />
-  //     ),
-  //   });
-  // }, [navigation]);
-
-  // const logout = async () => {
-  //   try {
-  //     router.replace("auth/WelcomeScreen");
-  //     await AsyncStorage.removeItem("user");
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
-
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = useState(false);
   const logout = async () => {
     setLoading(true);
     try {
+      const allKeys = await AsyncStorage.getAllKeys();
+      // clear data for this app
+      console.log("All AsyncStorage keys before logout:", allKeys);
       await AsyncStorage.clear();
-      console.log("AsyncStorage cleared");
+      console.log("All AsyncStorage data cleared.");
       setNotificationsEnabled(false);
       setDarkModeEnabled(false);
       setLoading(false);
@@ -51,102 +43,63 @@ const SettingsScreen = () => {
     }
   };
 
+  const renderSettingsLink = () => {
+    const goToRoute = (route, type) => {
+      switch (type) {
+        case "link":
+          Linking.openURL(route);
+        default:
+        case "route":
+          router.push(route);
+      }
+    };
+    return Object.entries(settingsLink).map(([key, value]) => {
+      return (
+        <View key={key} style={styles.settingsItemWrapper}>
+          <Text style={styles.settingsCategory}>{key}</Text>
+          <View style={styles.settingsItemContainer}>
+            {value.map((link, index) => {
+              return (
+                <Pressable
+                  onPress={() => goToRoute(link.link, link.type)}
+                  key={index}
+                  style={styles.settings}
+                >
+                  <Text style={styles.settingsText}>{link.title}</Text>
+                  <Image
+                    style={styles.settingsImage}
+                    source={require("../../assets/icons/nextArrow.png")}
+                  />
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+      );
+    });
+  };
+
   return (
     <>
-      <View style={styles.container}>
-        {loading ? (
-          <>
-            <Loading />
-            <Text>Loading...</Text>
-          </>
-        ) : (
-          <View style={styles.body}>
-            <View style={styles.bodyTitleSection}>
-              <Title style={styles.bodyTitle}>Settings</Title>
-            </View>
-            <View style={styles.settingRow}>
-              <Text style={styles.settingLabel}>Enable Notifications</Text>
-              <Switch
-                thumbColor="#007BFF"
-                value={notificationsEnabled}
-                onValueChange={handleNotificationsToggle}
-              />
-            </View>
-            {/* <View style={styles.settingRow}>
-              <Text style={styles.settingLabel}>Dark Mode</Text>
-              <Switch
-                thumbColor="#007BFF"
-                value={darkModeEnabled}
-                onValueChange={handleDarkModeToggle}
-              />
-            </View> */}
-            <View style={styles.logoutSection}>
-              <Pressable style={styles.logout} onPress={logout}>
-                <Text style={styles.logoutText}>LOGOUT</Text>
-              </Pressable>
-            </View>
+      <ImageBackground
+        source={require("../../assets/images/screenBg.png")}
+        style={styles.container}
+      >
+        <View style={styles.bodyTitleSection}>
+          <Title style={styles.bodyTitle}>Settings</Title>
+        </View>
+        <View style={styles.body}>
+          {renderSettingsLink()}
+          <View style={styles.logoutSection}>
+            <Pressable style={styles.logout} onPress={logout}>
+              <Text style={styles.logoutText}>LOGOUT</Text>
+            </Pressable>
           </View>
-        )}
-      </View>
+        </View>
+      </ImageBackground>
       <BottomNavigationBar page="Settings" />
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    fontFamily: "Rubik",
-    backgroundColor: "#F5F5F5",
-  },
-  settingRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
-    paddingLeft: 15,
-    backgroundColor: "white",
-    padding: 15,
-    borderRadius: 15,
-    elevation: 2,
-  },
-  settingLabel: {
-    fontSize: 16,
-  },
-  body: {
-    flex: 0.9,
-    marginTop: 10,
-  },
-  bodyTitle: {
-    fontSize: 35,
-    marginLeft: 5,
-    fontWeight: 700,
-    marginTop: 15,
-    paddingTop: 5,
-    height: 50,
-    color: "black",
-  },
-  logoutSection: {
-    width: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  logout: {
-    width: "30%",
-    height: 40,
-    backgroundColor: "#007BFF",
-    borderRadius: 15,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  logoutText: {
-    color: "white",
-    fontWeight: "800",
-    textAlign: "center",
-  },
-});
 
 export default SettingsScreen;

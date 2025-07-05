@@ -1,64 +1,74 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StatusBar } from "react-native";
+import React, { useState } from "react";
+import { View, Text, ImageBackground, SafeAreaView } from "react-native";
 import { useRouter } from "expo-router";
 import GoogleSignInScreen from "../GoogleSignInScreen";
 import { AuthFlowStyles as styles } from "../../../constants/AuthFlowStyles";
 
+import welcomeBg from "../../../assets/images/welcomeBg.png";
+import Button from "../../../reusables/Button/Button";
+import BottomDrawerModal from "../../../components/BottomDrawerModal/BottomDrawerModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const WelcomeScreen = () => {
   const router = useRouter();
+  const [continueAsGuest, setContinueAsGuest] = useState(false);
+
+  const continueAsGuestHandler = async () => {
+    await AsyncStorage.setItem("isGuest", "true");
+    setContinueAsGuest(!continueAsGuest);
+  };
+
+  const handleRouter = (route, type) => {
+    switch (type) {
+      case "push":
+        router.push(route);
+      default:
+      case "replace":
+        router.replace(route);
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <StatusBar backgroundColor="#0047cc" barStyle="light-content" />
+    <SafeAreaView style={{ position: "relative" }}>
+      <ImageBackground
+        style={styles.container}
+        source={welcomeBg}
+        resizeMode="cover"
+      >
+        <View style={styles.content}>
+          <View style={styles.logoSection}>
+            <Text style={styles.logoTitle}>Todo List</Text>
+            <Text style={styles.logoDescription}>
+              Manage your expenses seamlessly and intuitively
+            </Text>
+          </View>
+          <Text style={styles.title}>Welcome</Text>
 
-      <View style={styles.circle1} />
-      <View style={styles.circle2} />
+          <View style={styles.loginActionContainer}>
+            <Button theme="light">
+              <GoogleSignInScreen />
+            </Button>
 
-      <View style={styles.content}>
-        <Text style={styles.title}>Welcome</Text>
-        <Text style={styles.subtitle}>
-          Manage your expenses seamlessly & intuitively
-        </Text>
-
-        <TouchableOpacity
-          style={styles.signInButtonGoogle}
-          onPress={() => router.replace("ListManager")}
-        >
-          <GoogleSignInScreen />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.createAccountButton, { marginBottom: 10 }]}
-          onPress={() => router.replace("ListManager")}
-        >
-          <Text style={styles.createAccountButtonText}>Create an account</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            {
-              marginBottom: 0,
-              width: "100%",
-              backgroundColor: "transparent",
-              padding: 2,
-              alignItems: "center",
-            },
-          ]}
-          onPress={() => router.replace("ListManager")}
-        >
-          <Text style={styles.createAccountButtonText}>Continue as Guest</Text>
-        </TouchableOpacity>
-
-        {/* Bottom Link */}
-        <TouchableOpacity
-          onPress={() => router.push("/auth/login")}
-          style={styles.bottomLink}
-        >
-          <Text style={styles.bottomLinkText}>
-            Already have an account?{" "}
-            <Text style={styles.signInLink}>Log in</Text>
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+            <Button
+              label="Create new Account"
+              onPress={() => handleRouter("/auth/SignUp", "push")}
+              theme="dark"
+            />
+            <Button
+              label="Continue as Guest"
+              onPress={continueAsGuestHandler}
+              theme="light"
+            />
+          </View>
+          <Button
+            label="Already have an account? Sign in "
+            onPress={() => router.push("/auth/login", "push")}
+            theme={null}
+          />
+        </View>
+        {continueAsGuest ? <BottomDrawerModal /> : null}
+      </ImageBackground>
+    </SafeAreaView>
   );
 };
 

@@ -1,34 +1,62 @@
 import { StyleSheet } from "react-native";
 import { Colors } from "./Colors";
+import { theme } from "../app/util/theme";
 
 const headerStyles = StyleSheet.create({
   headerContainer: {
-    marginTop: 20,
-    backgroundColor: Colors.light.buttonBackground,
-    paddingVertical: 15,
-    paddingHorizontal: 10,
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-    elevation: 4,
-    borderBottomWidth: 1,
-    borderTopColor: Colors.light.buttonBackground,
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "flex-start",
+    justifyContent: "center",
+    paddingLeft: 25,
+    paddingRight: 25,
   },
-  topRow: {
+  greetingsContainer: {
+    flex: 0.5,
+    paddingLeft: 15,
+    display: "flex",
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+  },
+  greetSection: {
+    flex: 0.85,
+  },
+  imageSection: {
+    flex: 0.15,
   },
   headerTitle: {
-    color: "white",
-    fontSize: 20,
+    color: theme.white,
+    fontSize: 24,
     fontWeight: "bold",
     flex: 1,
-    textAlign: "center",
+    textAlign: "left",
+  },
+  headerSubtitle: {
+    width: 250,
+    color: theme.white,
+    fontSize: 14,
+    fontWeight: "regular",
+    flex: 1,
+    textAlign: "left",
+    marginBottom: 20,
+  },
+  profileImageOutline: {
+    width: 50,
+    height: 50,
+    position: "relative",
+    backgroundColor: theme.white,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 50,
   },
   profileImage: {
     width: 40,
     height: 40,
     borderRadius: 20,
+    position: "absolute",
+    top: 5,
+    left: 5,
   },
   subTitle: {
     color: "white",
@@ -37,20 +65,26 @@ const headerStyles = StyleSheet.create({
     textAlign: "center",
   },
   searchContainer: {
+    flex: 0.3,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#ffffff",
     borderRadius: 10,
-    marginTop: 15,
     paddingHorizontal: 10,
+  },
+  searchIcon: {
+    width: 22,
+    height: 22,
+    marginLeft: 10,
+    marginRight: 10,
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
-    color: "#424242",
+    fontSize: 20,
+    color: "black",
+    fontWeight: "regular",
     marginLeft: 5,
   },
-
   iconColor: {
     color: "white",
   },

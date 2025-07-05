@@ -2,7 +2,12 @@ import React from "react";
 import { Text, TouchableOpacity, Image, ToastAndroid } from "react-native";
 import { useRouter } from "expo-router";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { validateUserDetails } from "../util/helper";
+import {
+  initializeDefaultListOnLoad,
+  initializeFavouriteList,
+  saveDefaultListToCloud,
+  validateUserDetails,
+} from "../util/helper";
 import { createProfile, getUser } from "../firebase/controller/userController";
 import { getAllNotesOfUser } from "../firebase/controller/notesController";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -49,37 +54,76 @@ const GoogleSignInScreen = () => {
   };
 
   const handleUserNotes = async (currentUser, name, email, photo) => {
-    let userNotes = await getAllNotesOfUser(JSON.parse(currentUser.notes));
-    if (userNotes && userNotes.length !== 0) {
-      await AsyncStorage.setItem("todos", JSON.stringify(userNotes));
-    } else {
-      await AsyncStorage.setItem("todos", JSON.stringify([]));
+    try {
+      let userNotes = await getAllNotesOfUser(JSON.parse(currentUser.notes));
+      if (userNotes && userNotes?.length !== 0) {
+        await AsyncStorage.setItem("todos", JSON.stringify(userNotes));
+      } else {
+        await AsyncStorage.setItem("todos", JSON.stringify([]));
+      }
+      const { password, notes, uid } = currentUser;
+      await saveUserLogin({
+        uid: uid,
+        name: name,
+        email: email,
+        password: password,
+        notes: JSON.parse(notes),
+        photo: photo,
+      });
+      ToastAndroid.show(`Welcome, ${name}`, ToastAndroid.SHORT);
+      router.replace("ListManager");
+    } catch (err) {
+      console.log(err);
     }
-    const { password, notes, uid } = currentUser;
-    await saveUserLogin({
-      uid: uid,
-      name: name,
-      email: email,
-      password: password,
-      notes: JSON.parse(notes),
-      photo: photo,
-    });
-    ToastAndroid.show(`Welcome, ${name}`, ToastAndroid.SHORT);
-    router.replace("ListManager");
   };
 
   const handleNewUser = async (id, name, email, photo) => {
-    let payload = {
+    //Create Default List
+    const defaultListPayload = {
+      uid: `defaultList${id}`,
+      title: "My List",
+      notes: "Your Default List",
+      data: JSON.stringify([]),
+      admin: email,
+      collaborators: [email],
+    };
+
+    let userPayload = {
       uid: id,
       name: name,
       email: email,
       photo: photo,
-      notes: JSON.stringify([]),
+      notes: JSON.stringify([`defaultList${id}`]),
     };
-    let createUser = await createProfile("google", payload);
-    if (createUser) {
-      await saveUserLogin(payload);
-      router.replace("ListManager");
+    try {
+      const createUser = await createProfile("google", userPayload);
+      const isDefaultListInitiated = await initializeDefaultListOnLoad(
+        defaultListPayload
+      );
+      const isDefaultListInitiatedToCloud = await saveDefaultListToCloud(
+        defaultListPayload
+      );
+      initializeFavouriteList(userPayload);
+      if (
+        createUser &&
+        isDefaultListInitiated &&
+        isDefaultListInitiatedToCloud
+      ) {
+        await AsyncStorage.setItem(
+          "todos",
+          JSON.stringify([defaultListPayload])
+        );
+        await saveUserLogin(userPayload);
+        router.replace("ListManager");
+      } else {
+        if (!createUser) console.log("User creation - failed", createUser);
+        if (!isDefaultListInitiated)
+          console.log("Default List loaded - failed", isDefaultListInitiated);
+        if (!isDefaultListInitiatedToCloud)
+          console.log("Default List save to Cloud - failed");
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -92,12 +136,15 @@ const GoogleSignInScreen = () => {
   const handleGoogleSignInMobile = async () => {
     try {
       const response = await GoogleLogin();
+
+      console.log("Google Sign In Response", response);
+
       const { type, data } = response;
       switch (type) {
         case "success":
           {
             const { idToken, user } = data;
-            if (idToken.length !== 0) {
+            if (idToken?.length !== 0) {
               const { id, name, email, photo } = user;
               const payload = {
                 id: id,
@@ -121,14 +168,10 @@ const GoogleSignInScreen = () => {
   return (
     <TouchableOpacity
       style={{
+        display: "flex",
+        justifyContent: "center",
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "transparent",
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,
-        elevation: 0,
-        shadowColor: "transparent",
       }}
       onPress={handleGoogleSignInMobile}
     >
@@ -138,7 +181,7 @@ const GoogleSignInScreen = () => {
         }}
         style={{ width: 20, height: 20, marginRight: 10 }}
       />
-      <Text style={{ color: "#000", fontWeight: "bold" }}>
+      <Text style={{ color: "#000", fontWeight: "bold", fontSize: 18 }}>
         Sign in with Google
       </Text>
     </TouchableOpacity>

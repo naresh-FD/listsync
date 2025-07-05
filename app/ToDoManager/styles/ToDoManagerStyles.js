@@ -1,21 +1,27 @@
 import { StyleSheet } from "react-native";
 import { Colors } from "../../../constants/Colors";
+import { theme } from "../../util/theme";
 
 const styles = StyleSheet.create({
   toDoContainer: {
     width: "100%",
     height: "100%",
-    marginTop: 30,
+    flex: 1,
+    justifyContent: "flex-start",
+    alignItems: "center",
     display: "flex",
-    backgroundColor: "#F5F5F5",
+    flexDirection: "column",
+    paddingTop: 15,
   },
   header: {
-    flex: 0.05,
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    flex: 0.25,
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 5,
   },
   navSection: {
     flex: 1,
@@ -46,7 +52,14 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
   body: {
-    flex: 0.8,
+    flex: 0.85,
+    width: "100%",
+    height: "100%",
+    backgroundColor: theme.white,
+    display: "flex",
+    alignItems: "center",
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
   },
   bodyTitleSection: {
     width: "100%",
@@ -111,25 +124,35 @@ const styles = StyleSheet.create({
     color: "black",
   },
   listItemEditable: {
-    width: "93%",
+    width: "100%",
   },
   listItemUnEditable: {
-    width: "93%",
+    width: "100%",
   },
   authorTitle: {
     fontSize: 10,
     marginBottom: 5,
   },
   listItemWrapper: {
+    width: 310,
     display: "flex",
     flexDirection: "row",
     alignItems: "start",
     justifyContent: "space-between",
-    marginLeft: 15,
-    backgroundColor: "white",
-    borderRadius: 10,
     margin: 2,
     paddingLeft: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    height: 50,
+    marginLeft: 2,
+    marginRight: 2,
+    elevation: 4,
+  },
+  listItemSelected: {
+    backgroundColor: theme.tertirary,
+  },
+  listItemUnSelected: {
+    backgroundColor: theme.white,
   },
   onEditlistItem: {
     borderWidth: 1,
@@ -167,12 +190,20 @@ const styles = StyleSheet.create({
   editIconWrapper: {
     width: 35,
     height: 35,
-    marginLeft: 2,
-    marginRight: 2,
+    marginLeft: 5,
+    marginRight: 5,
     borderRadius: 50,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+  },
+  actionIcon: {
+    width: 36,
+    height: 36,
+  },
+  tickIcon: {
+    width: 24,
+    height: 24,
   },
   editDeleteActionContainer: {
     display: "flex",
@@ -181,15 +212,28 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   listItemTitle: {
-    color: "black",
     fontWeight: "700",
     fontSize: 18,
     height: 30,
+    marginTop: 5,
+    marginBottom: -3,
+  },
+  listItemTitleSelected: {
+    color: "white",
+  },
+  listItemTitleUnSelected: {
+    color: "black",
   },
   listItemDescription: {
     color: "grey",
     fontSize: 14,
     marginTop: -5,
+  },
+  listItemDescriptionSelected: {
+    color: "white",
+  },
+  listItemDescriptionUnSelected: {
+    color: "black",
   },
   listCategoryTitle: {
     color: "grey",
@@ -347,11 +391,10 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     alignItems: "center",
   },
-  bodyList: {
-    flex: 1,
-  },
   bodyScrollViewStyles: {
-    flex: 1,
+    padding: 30,
+    width: "100%",
+    height: "92%",
   },
   tapToAddWrapper: {
     width: "100%",
